@@ -29,7 +29,9 @@ def distmat(n,M):
             for j0 in range(1,n):
                 for i1 in range(1,n):
                     for j1 in range(1,n):
-                        if dist[][
+                        if dist[i0+j0][i1+j1] = -1 and P[indice("n",i0,j0)][indice("n",i1,j1)]:
+                            dist[i0+j0][i1+j1]=p
+    return dist
 class Neurone:
     def __init__(self, i, j, row,col,data,connections):
         self._i=i
