@@ -50,7 +50,7 @@ class Neurone:
         self._matC=connections
         
 class SOM:
-    def __init__(self,n,data):
+    def __init__(self,n,data,MC):
         
         #Définition des paramètres nécessaires à l'entraînement
         self._eps0=0.01
@@ -66,7 +66,7 @@ class SOM:
         self._nodes=[[] for i in range(self._n)]
         for i in range (self._n):
             for j in range (self._n):
-                self._nodes[i].append(Neurone(i,j,self._n,self._n,self._data))
+                self._nodes[i].append(Neurone(i,j,self._n,self._n,self._data,MC[i,j]))
         self._nodes=np.array(self._nodes)
                 #La grille est initialisée de manière aléatoire
         
