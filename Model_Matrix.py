@@ -1,3 +1,5 @@
+from SOM import *
+
 def kohonen_model(n):
     
     M=[[0 for i in range (n)] for j in range (n)]
@@ -16,7 +18,7 @@ def kohonen_model(n):
     mat_centre.append([1,1,1,1,0])
     
     mat_bas=[]
-    for i in range(3):
+    for i in range(4):
         mat_bas.append(V)
     mat_bas.append([1,1,1,0,0])
     
@@ -51,7 +53,7 @@ def kohonen_model(n):
                 elif j == n-1:
                     M[i][j] = [V,nulle,V,nulle,[1,0,1,0,0]]
 
-    return M
+    return np.array(M)
 
 def snake(n):
     M=[[0 for i in range (n)] for j in range (n)]
@@ -72,10 +74,22 @@ def snake(n):
                 else:
                     M[i][j] = [[0,1,0,0,1],A,nulle,nulle,[1,1,0,0,0]]
             else:
-                M[i][j] = [B,nulle,nulle,A[1,0,0,1,0]]
+                M[i][j] = [B,nulle,nulle,A, [1,0,0,1,0]]
+    
+    return np.array(M)
             
                 
-            
+n = 4
+
+test_k = SOM(n, kohonen_model(n))
+
+test_s = SOM(n, snake(n))
+
+print("Distance de test avec une matrice type kohonen")
+print(np.array(test_k.MDist))
+print('\n')
+print("Distance de test avec une matrice type ligne")
+print(np.array(test_s.MDist))
     
     
     
