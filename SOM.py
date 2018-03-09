@@ -1,7 +1,7 @@
 import numpy as np
 import random                                                                                                                                                                                                                               
 
-CARD={"N":0,"E":1,"W":2,"S":3, "n":8}
+CARD={"N":0,"E":1,"W":2,"S":3, "n":4}
 
 def dist_quad(x,y):
     return np.sum((x - y) ** 2)
@@ -15,8 +15,16 @@ def normalized_gaussian(d, sig):
 
    
 def indice(C,i,j):
-    return CARD[C]+4*j+64*i
-    
+    return CARD[C]+8*j+128*i
+
+i=1
+j=1
+
+print(indice("N",i,j))
+print(indice("E",i,j))
+print(indice("W",i,j))
+print(indice("S",i,j))
+print(indice("n",i,j))
     
 def distmat(n,M):
     dist = -1*np.ones((n**2,n**2))
@@ -27,8 +35,8 @@ def distmat(n,M):
             for j0 in range(1,n):
                 for i1 in range(1,n):
                     for j1 in range(1,n):
-                        if dist[i0+j0][i1+j1] == -1 and P[indice("n",i0,j0)][indice("n",i1,j1)] != 0:
-                            dist[i0+j0][i1+j1] = p
+                        if dist[i0*n+j0][i1*n+j1] == -1 and P[indice("n",i0,j0)][indice("n",i1,j1)] != 0:
+                            dist[i0*n+j0][i1*n+j1] = p
     return dist
 class Neurone:
     def __init__(self, i, j, cote,connections): #vraies variables self, i, j, cote,data,connections
@@ -82,40 +90,30 @@ class SOM:
                     if k =="N":
                         indi = indice("S",i-1,j)
                         for h in CARD.keys():
-                            if h != "n" and self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
-                                self.adj[indi][indice(h,i,j)] = 1
-                            elif self.nodes[i,j]._matC[CARD[k]][4] == 1:
+                            if self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
                                 self.adj[indi][indice(h,i,j)] = 1
                                 
                     elif k == "E":
                         indi = indice("W",i,j+1)
                         for h in CARD.keys():
-                            if h != "n" and self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
-                                self.adj[indi][indice(h,i,j)] = 1
-                            elif self.nodes[i,j]._matC[CARD[k]][4] == 1:
+                            if self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
                                 self.adj[indi][indice(h,i,j)] = 1
                                 
                     elif k == "W":
                         indi = indice("E",i,j-1)
                         for h in CARD.keys():
-                            if h != "n" and self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
-                                self.adj[indi][indice(h,i,j)] = 1
-                            elif self.nodes[i,j]._matC[CARD[k]][4] == 1:
+                            if self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
                                 self.adj[indi][indice(h,i,j)] = 1
                                 
                     elif k == "S":
                         indi = indice("N",i+1,j)
                         for h in CARD.keys():
-                            if h != "n" and self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
-                                self.adj[indi][indice(h,i,j)] = 1
-                            elif self.nodes[i,j]._matC[CARD[k]][4] == 1:
+                            if self.nodes[i,j]._matC[CARD[k]][CARD[h]] == 1:
                                 self.adj[indi][indice(h,i,j)] = 1
                                 
                     elif k == "n":
                         for h in CARD.keys():
-                            if h != "n" and self.nodes[i,j]._matC[4][CARD[h]] == 1:
-                                self.adj[indi][indice(h,i,j)] = 1
-                            elif self.nodes[i,j]._matC[4][4] == 1:
+                            if self.nodes[i,j]._matC[4][CARD[h]] == 1:
                                 self.adj[indi][indice(h,i,j)] = 1
         
         self.MDist = distmat(self.n,self.adj)

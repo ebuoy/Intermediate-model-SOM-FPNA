@@ -1,4 +1,5 @@
 from SOM import *
+np.set_printoptions(threshold=np.inf)
 
 def kohonen_model(n):
     
@@ -79,13 +80,14 @@ def snake(n):
     return np.array(M)
             
                 
-n = 4
+n = 2
 
 test_k = SOM(n, kohonen_model(n))
 
 test_s = SOM(n, snake(n))
 
 print("Distance de test avec une matrice type kohonen")
+print(np.array(test_k.adj))
 print(np.array(test_k.MDist))
 print('\n')
 print("Distance de test avec une matrice type ligne")
