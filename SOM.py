@@ -1,6 +1,6 @@
 import numpy as np
-import random                                                                                                                                                                                                                               
-
+import random
+from Graph import *
 CARD={"N":0,"E":1,"W":2,"S":3, "n":4}
 
 def dist_quad(x,y):
@@ -11,20 +11,12 @@ def gauss(d, sig):
 
 
 def normalized_gaussian(d, sig):
-    return (np.exp(-((d / sig) ** 2) / 2) / sig) * sig
+    return np.exp(-((d / sig) ** 2) / 2)
 
    
 def indice(C,i,j):
     return CARD[C]+8*j+128*i
 
-i=1
-j=1
-
-print(indice("N",i,j))
-print(indice("E",i,j))
-print(indice("W",i,j))
-print(indice("S",i,j))
-print(indice("n",i,j))
     
 def distmat(n,M):
     dist = -1*np.ones((n**2,n**2))
@@ -38,6 +30,7 @@ def distmat(n,M):
                         if dist[i0*n+j0][i1*n+j1] == -1 and P[indice("n",i0,j0)][indice("n",i1,j1)] != 0:
                             dist[i0*n+j0][i1*n+j1] = p
     return dist
+
 class Neurone:
     def __init__(self, i, j, cote,connections): #vraies variables self, i, j, cote,data,connections
         self._i = i
@@ -54,7 +47,9 @@ class Neurone:
                     self._weight[i].append(np.max(data)*np.random.random(data.shape[2]))
             self._weight = np.array(self._weight)"""
         self._matC = connections
-        
+
+
+
 class SOM:
     def __init__(self, n, MC,  distance=dist_quad): # vraies variables : self, n, data, nbEpoch, MC, distance=dist_quad
         
@@ -80,10 +75,39 @@ class SOM:
             
         self.nodes=np.array(self.nodes)
                         #La grille est initialisée de manière aléatoire
-        
+
+
+
         #Initialisation de la matrice d'adjacence
-        self.adj=np.zeros((8+4*self.n+64*self.n,8+4*self.n+64*self.n))
-        
+        # self.adj=np.zeros((8+4*self.n+64*self.n, 8+4*self.n+64*self.n))
+
+        # Each line and column of the complete graph is composed of n neurons with their left/top connection which is
+        # also the right/bottom connection of their left/top neighbor, so we only need to put n*2 vertices per line.
+        # Except for the last neuron (who doesn't have a right neighbor), so we are adding one. We square the total
+        # because we have n**2 neurons.
+        self.matrix_size = self.n * 2 + 1
+        self.global_connections = Graph(self.matrix_size**2)
+
+        # The indexing works as follow :
+        # - All neurons are on odd coordinates (so [5,5] is a neuron, but [5,4] isn't)
+        # - The connections are the direct neighbors of neurons ( [4,5] is the Eastern connection of the [5,5] neuron,
+        # [5,6] is the Southern one). Notice that [5,6] is also the Northern connection of [5,7]
+        # - Nodes with two even coordinates aren't used
+        # This is then flattened into one dimension by lines.
+        for i in range(self.n):
+            for j in range(self.n):
+                for k in range(5):
+                    for l in range(5):
+                        if self.nodes[i, j]._matC[k, l] != 0:
+                            neuron_coord = (j*2 + 1) * self.matrix_size + i*2 + 1
+                            in_coord = neuron_coord + self.get_offset(k)
+                            out_coord = neuron_coord + self.get_offset(l)
+                            self.global_connections.add_edge(Edge(in_coord, out_coord, self.nodes[i, j]._matC[k, l]))
+
+        self.adj = self.global_connections.get_adjacency_matrix()
+        self.MDist = self.global_connections.get_all_shortest_paths()
+
+        """
         for i in range(self.n):
             for j in range(self.n):
                 for k in CARD.keys():
@@ -117,8 +141,19 @@ class SOM:
                                 self.adj[indi][indice(h,i,j)] = 1
         
         self.MDist = distmat(self.n,self.adj)
-                    
-        
+        """
+
+
+    def get_offset(self, x):
+        return {
+            0: -self.matrix_size,   # North
+            1: 1,                   # East
+            2: -1,                  # West
+            3: self.matrix_size,    # South
+            4: 0                    # neuron
+        }.get(x)
+
+
     def winner(self, vector, distance=dist_quad):
         dist = np.empty_like(self.nodes)
         for i in range(self.row):  # Computes the distances between the tested vector and all nodes
@@ -160,7 +195,6 @@ class SOM:
         random.shuffle(self.vector_list)
     
     def getmap(self):
-        
         map=[[] for i in range(self.n)]
         for i in range(self.n):
             for j in range(self.n):
