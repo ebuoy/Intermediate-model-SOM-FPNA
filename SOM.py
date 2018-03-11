@@ -81,28 +81,23 @@ class SOM:
         #Initialisation de la matrice d'adjacence
         # self.adj=np.zeros((8+4*self.n+64*self.n, 8+4*self.n+64*self.n))
 
-        # Each line and column of the complete graph is composed of n neurons with their left/top connection which is
-        # also the right/bottom connection of their left/top neighbor, so we only need to put n*2 vertices per line.
-        # Except for the last neuron (who doesn't have a right neighbor), so we are adding one. We square the total
-        # because we have n**2 neurons.
-        self.matrix_size = self.n * 2 + 1
-        self.global_connections = Graph(self.matrix_size**2)
+        self.global_connections = Graph()
+        for i in range(self.n):  # Horizontal
+            for j in range(self.n):  # Vertical
+                self.global_connections.add_edge(Edge("No"+str(i)+","+str(j), "Si"+str(i)+","+str(j-1), 1))
+                self.global_connections.add_edge(Edge("So"+str(i)+","+str(j), "Ni"+str(i)+","+str(j+1), 1))
+                self.global_connections.add_edge(Edge("Eo"+str(i)+","+str(j), "Wi"+str(i+1)+","+str(j), 1))
+                self.global_connections.add_edge(Edge("Wo"+str(i)+","+str(j), "Ei"+str(i-1)+","+str(j), 1))
 
-        # The indexing works as follow :
-        # - All neurons are on odd coordinates (so [5,5] is a neuron, but [5,4] isn't)
-        # - The connections are the direct neighbors of neurons ( [4,5] is the Eastern connection of the [5,5] neuron,
-        # [5,6] is the Southern one). Notice that [5,6] is also the Northern connection of [5,7]
-        # - Nodes with two even coordinates aren't used
-        # This is then flattened into one dimension by lines.
         for i in range(self.n):
             for j in range(self.n):
                 for k in range(5):
                     for l in range(5):
-                        if self.nodes[i, j]._matC[k, l] != 0:
-                            neuron_coord = (j*2 + 1) * self.matrix_size + i*2 + 1
-                            in_coord = neuron_coord + self.get_offset(k)
-                            out_coord = neuron_coord + self.get_offset(l)
-                            self.global_connections.add_edge(Edge(in_coord, out_coord, self.nodes[i, j]._matC[k, l]))
+                        if self.nodes[j, i]._matC[k, l] != 0:
+                            inp = SOM.get_index(k, 'i')+str(i)+','+str(j)
+                            out = SOM.get_index(l, 'o')+str(i)+','+str(j)
+                            e = Edge(inp, out, self.nodes[j, i]._matC[k, l])
+                            self.global_connections.add_edge(e)
 
         self.adj = self.global_connections.get_adjacency_matrix()
         self.MDist = self.global_connections.get_all_shortest_paths()
@@ -143,16 +138,22 @@ class SOM:
         self.MDist = distmat(self.n,self.adj)
         """
 
+    def compute_neurons_distance(self):
+        neurons_list = []
+        for i in range(self.n):
+            for j in range(self.n):
+                neurons_list.append("n"+str(i)+","+str(j))
+        self.neural_dist = self.global_connections.get_shortest_paths(neurons_list)
 
-    def get_offset(self, x):
+    @staticmethod
+    def get_index(x, y):
         return {
-            0: -self.matrix_size,   # North
-            1: 1,                   # East
-            2: -1,                  # West
-            3: self.matrix_size,    # South
-            4: 0                    # neuron
+            0: "N"+y,    # North
+            1: "E"+y,    # East
+            2: "W"+y,    # West
+            3: "S"+y,    # South
+            4: "n"       # neuron
         }.get(x)
-
 
     def winner(self, vector, distance=dist_quad):
         dist = np.empty_like(self.nodes)

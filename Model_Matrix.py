@@ -53,7 +53,6 @@ def kohonen_model(n):
                     M[i][j] = mat_bas
                 elif j == n-1:
                     M[i][j] = [V,nulle,V,nulle,[1,0,1,0,0]]
-
     return np.array(M)
 
 def snake(n):
@@ -86,12 +85,17 @@ test_k = SOM(n, kohonen_model(n))
 
 test_s = SOM(n, snake(n))
 
+test_k.compute_neurons_distance()
+test_s.compute_neurons_distance()
+
 print("Distance de test avec une matrice type kohonen")
-print(np.array(test_k.adj))
-print(np.array(test_k.MDist))
+print(test_k.neural_dist)
+#print(np.array(test_k.adj))
+#print(np.array(test_k.MDist))
 print('\n')
 print("Distance de test avec une matrice type ligne")
-print(np.array(test_s.MDist))
+#print(np.array(test_s.MDist))
+print(test_s.neural_dist)
     
     
     
