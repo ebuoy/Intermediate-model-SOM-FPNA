@@ -1,12 +1,7 @@
 from Images import *
 from SOM import *
+from Connections import *
 np.set_printoptions(threshold=np.inf)  # used to display numpy arrays in full
-global kohonen_matrix
-kohonen_matrix = [[0, 0, 0, 0, 1],
-                  [0, 0, 0, 0, 1],
-                  [0, 0, 0, 0, 1],
-                  [0, 0, 0, 0, 1],
-                  [1, 1, 1, 1, 0]]
 
 
 def display_som(som_list):
@@ -28,15 +23,11 @@ def run():
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numéro du neurone vainqueur pour l'imagette correspondante
     old = datacomp
 
-    nb_epoch = 100
+    nb_epoch = 300
     epoch_time = len(data)
     nb_iter = epoch_time * nb_epoch
-    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
-    for i in range(neuron_nbr):
-        for j in range(neuron_nbr):
-            connexion_matrix[i, j] = kohonen_matrix
 
-    carte = SOM(neuron_nbr, data, nb_epoch, connexion_matrix)
+    carte = SOM(neuron_nbr, data, nb_epoch, small_worlds())
 
     for i in range(nb_iter):
         vect, iwin, jwin = carte.train(i, epoch_time)
@@ -49,3 +40,12 @@ def run():
             old = np.array(datacomp)
     img.compression(carte)
     # display_som(carte.getmap())
+
+
+def test_distances():
+    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
+    for i in range(neuron_nbr):
+        for j in range(neuron_nbr):
+            connexion_matrix[i, j] = kohonen_matrix
+
+    SOM(neuron_nbr, data, 1, connexion_matrix)

@@ -9,7 +9,7 @@ global output_path, data, pictures_dim, neuron_nbr, log
 output_path = "./results/"
 data = []
 pictures_dim = (10, 10)
-neuron_nbr = 10
+neuron_nbr = 12
 log = True
 
 
@@ -43,8 +43,12 @@ class Dataset:
     def compression(self, som):
         som_map = som.getmap()
         pixels = []
+        winners = []
         for i in range(len(self.data)):
-            pixels.append(som_map[som.winner(self.data[i]/255)])
+            w = som.winner(self.data[i]/255)
+            if w not in winners:
+                winners.append(w)
+            pixels.append(som_map[w])
         px2 = []
         lst2 = ()
         for i in range(self.nb_pictures[0]):
@@ -56,9 +60,13 @@ class Dataset:
             lst2 += (px2[i],)
         px = np.concatenate(lst2, axis=0)
         px = np.array(px, 'uint8')
+
         file = Image.fromarray(px)
         file.show()
         file.save(output_path+"one.png")
+
+        n = neuron_nbr*neuron_nbr
+        print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")
 
 
 def load_image_folder(path):

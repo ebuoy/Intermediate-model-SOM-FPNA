@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.sparse.csgraph import floyd_warshall
+from heapq import *
 
 
 class Edge:
@@ -10,6 +11,9 @@ class Edge:
 
     def to_string(self):
         return self.in_vertex+"--"+str(self.weight)+"-->"+self.out_vertex
+
+    def __lt__(self, other):
+        return self.weight < other.weight
 
 
 class Graph:
@@ -36,17 +40,7 @@ class Graph:
         return adjacency_matrix
 
     def get_all_shortest_paths(self):
-        # We are using the Floyd-Warshall algorithm
-        res = floyd_warshall(self.get_adjacency_matrix())
-        return res
-
-
-        dist_matrix = self.get_adjacency_matrix()
-        for k in range(len(self.vertex_list)):
-            for i in range(len(self.vertex_list)):
-                for j in range(len(self.vertex_list)):
-                    dist_matrix[i, j] = np.minimum(dist_matrix[i, j], dist_matrix[i, k] + dist_matrix[k, j])
-        return dist_matrix
+        return floyd_warshall(self.get_adjacency_matrix())
 
     def get_shortest_paths(self, chosen_vertex):
         dist_matrix = self.get_all_shortest_paths()
@@ -80,6 +74,30 @@ class Graph:
         for e in finished:
             g.add_edge(e)
         return g
+
+    def test(self):
+        global open_list, hash_map, current, dist
+        open_list = []
+        hash_map = [[] for i in range(len(self.vertex_list))]
+        dist = self.get_adjacency_matrix()
+        for e in self.edges_list:
+            hash_map[self.vertex_list[e.in_vertex]].append(e)
+            heappush(open_list, e)
+
+        while open_list:
+            current = heappop(open_list)
+            self.update()
+
+        return dist
+
+    def update(self):
+        if current.weight == dist[self.vertex_list[current.in_vertex], self.vertex_list[current.out_vertex]]:
+            for e in hash_map[self.vertex_list[current.out_vertex]]:
+                w = current.weight + e.weight
+                if w < dist[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]]:
+                    dist[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]] = w
+                    new = Edge(current.in_vertex, e.out_vertex, w)
+                    heappush(open_list, new)
 
     def to_string(self):
         res = "Vertices : "+str(self.vertex_list)+"\nEdges :\n"
