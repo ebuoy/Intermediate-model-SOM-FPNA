@@ -1,0 +1,46 @@
+1) Shortest path
+
+Poids positifs, intéressant pour de faibles nombres d'arêtes
+Faire un estimation "heuristique" des nombres de chemins connus
+
+Pourrait-être plus dynamique que les autres algorithmes de plus court chemin (?? à voir)
+
+2) GUI
+
+Ok pour le défilement continu, modifier le graph de connexion de manière interactive en cours
+
+3) Nombre de prototypes utiles + topologie petit monde
+
+Nombre de neurones utiles pour kohonen est plus important que pour small world, mais l'affichage est meilleur avec small world 
+(visuellement parlant)
+
+A tester : pour d'autres tailles de réseaux (30x30 par exemple?)
+Visualisation des prototypes : les clusters semblent être plus libre (deux neurones a priori voisins direct, mais maintenant à distance plus importante) 
+Les centres sont plus lisses que leurs voisins.
+
+On a des clusters fortement connectés, mais avec des configurations un peu plus libres
+
+Faire un réseau petit monde avec des clusters plus grands (avec plus d'un centre?)
+
+Modifier la taille des prototypes (15x15, 20x20...)
+
+A rechercher : A quoi ressemble les petits mondes biologiques (fortement connectés entre eux, quelle dimension des clusters...)?
+
+5) Suppression dynamique de liens + PSOM
+
+On enlève les liens trop proches au bout de n ité et on recommence le calcul de distance. 
+Si les prototypes sont trop proches, ils deviennent inutiles
+
+Pour les configurations petit monde : modifier individuellement la taille de chaque petit monde (changer les centres des mondes?)
+
+PSOM: Suppressions des liens de clusters de neurones trop éloignés
+
+6) Rédaction article (souvent 6 pages double colonne)
+
+Pas sur la partie dynamique. L'article serait jusqu'au Kohonen connexion petit monde. En 2 pages, "état-de-l'art" présentation Kohonen, 
+GNG, quantification vectorielle.
+Quelques mots sur SOMA (pourquoi on s'intéresse à cela) plus argumenté que dans le rapport.
+Plan détaillé sur petit monde etc... Mais pas tout de suite de rédaction sur ce point
+
+A voir Jupyter (IDE dynamique)
+
