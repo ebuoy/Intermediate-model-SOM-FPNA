@@ -7,6 +7,10 @@ def dist_quad(x, y):
     return np.sum((x - y) ** 2)
 
 
+def dist(x, y):
+    return np.sum(np.abs(x - y))
+
+
 def gauss(d, sig):
     return np.exp(-((d / sig) ** 2) / 2) / sig
 
@@ -89,10 +93,11 @@ class SOM:
         self.neural_graph.print()
         print(self.neural_graph.to_string())
         self.compute_neurons_distance()
+        print(self.neural_dist)
+
 
     def compute_neurons_distance(self):
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
-        print(self.neural_dist)
         self.MDist = np.array(self.neural_dist)
 
         maximum = -1
@@ -159,6 +164,17 @@ class SOM:
                 dist = self.MDist[bmu[1]*self.n+bmu[0], j*self.n+i]
                 if dist != np.Infinity:
                     self.nodes[i, j].weight += f(dist, self.sigma)*self.epsilon*(vector-self.nodes[i, j].weight)
+
+    def cut_close_neighbors(self, distance=dist):
+        for i in range(self.n):  # Computes the distances between the tested vector and all nodes
+            for j in range(self.n):
+                for i2 in range(i+1, self.n):
+                    for j2 in range(j+1, self.n):
+                        dist = distance(self.nodes[i, j].weight, self.nodes[i2, j2].weight)
+                        if dist < 1:
+                            print("Removed (", i, ",", j, ") - (", i2, ",", j2, ") distance : ", dist)
+                            self.remove_edges((i, j), (i2, j2))
+
 
     def fully_random_vector(self):
         return np.random.randint(np.shape(self.data)[0])

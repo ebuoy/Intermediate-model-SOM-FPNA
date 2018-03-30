@@ -38,7 +38,7 @@ def run():
     epoch_time = len(data)
     nb_iter = epoch_time * nb_epoch
 
-    carte = SOM(neuron_nbr, data, nb_epoch, small_worlds())
+    carte = SOM(neuron_nbr, data, nb_epoch, kohonen())
 
     for i in range(nb_iter):
         vect, iwin, jwin = carte.train(i, epoch_time)
@@ -49,6 +49,8 @@ def run():
             print("Changed values :", diff)
             print("Mean error : ", compute_mean_error(datacomp, data, carte.getmaplist()))
             old = np.array(datacomp)
+            if i // epoch_time % 10 == 0 and i // epoch_time > nb_epoch/2:
+                carte.cut_close_neighbors()
 
     img.compression(carte)
     display_som(carte.getmaplist())

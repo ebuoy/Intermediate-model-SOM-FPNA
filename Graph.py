@@ -6,7 +6,7 @@ from scipy.sparse.csgraph import floyd_warshall
 global output_path, pictures_dim, neuron_nbr
 output_path = "./results/"
 pictures_dim = (10, 10)
-neuron_nbr = 21
+neuron_nbr = 20
 
 
 class Edge:
