@@ -16,7 +16,7 @@ def normalized_gaussian(d, sig):
 
 
 class Neurone:
-    def __init__(self, i, j, cote, data, connections): #vraies variables self, i, j, cote,data,connections
+    def __init__(self, i, j, cote, data, connections):
         self.i = i
         self.j = j
         self.x = i/cote
@@ -92,6 +92,8 @@ class SOM:
 
     def compute_neurons_distance(self):
         g = self.global_connections.extract_neurons_graph()
+        g.print()
+        print(g.to_string())
         self.neural_dist = g.get_all_shortest_paths()
 
     @staticmethod

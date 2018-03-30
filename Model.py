@@ -5,8 +5,19 @@ np.set_printoptions(threshold=np.inf)  # used to display numpy arrays in full
 
 
 def display_som(som_list):
-    nothing = 0
-    #TODO : implémenter
+    px2 = []
+    lst2 = ()
+    for i in range(neuron_nbr):
+        lst = ()
+        for j in range(neuron_nbr):
+            som_list[i * neuron_nbr + j] = som_list[i * neuron_nbr + j].reshape(pictures_dim)
+            lst = lst + (som_list[i * neuron_nbr + j],)
+        px2.append(np.concatenate(lst, axis=1))
+        lst2 += (px2[i],)
+    px = np.concatenate(lst2, axis=0)
+    som_image = Image.fromarray(px)
+    som_image.show()
+    return som_image
 
 
 def compute_mean_error(datacomp, datamat, SOMList):
@@ -18,12 +29,12 @@ def compute_mean_error(datacomp, datamat, SOMList):
 
 def run():
     img = Dataset("./image/Audrey.png")
-    data = img.data
+    data = img.data  # load_image_folder("./image/")
 
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numéro du neurone vainqueur pour l'imagette correspondante
     old = datacomp
 
-    nb_epoch = 300
+    nb_epoch = 100
     epoch_time = len(data)
     nb_iter = epoch_time * nb_epoch
 
@@ -38,14 +49,7 @@ def run():
             print("Changed values :", diff)
             print("Mean error : ", compute_mean_error(datacomp, data, carte.getmaplist()))
             old = np.array(datacomp)
+
     img.compression(carte)
-    # display_som(carte.getmap())
+    display_som(carte.getmaplist())
 
-
-def test_distances():
-    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
-    for i in range(neuron_nbr):
-        for j in range(neuron_nbr):
-            connexion_matrix[i, j] = kohonen_matrix
-
-    SOM(neuron_nbr, data, 1, connexion_matrix)

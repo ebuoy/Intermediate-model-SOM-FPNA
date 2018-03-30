@@ -4,14 +4,6 @@ import os
 
 np.set_printoptions(threshold=np.inf)
 
-# Global variables
-global output_path, data, pictures_dim, neuron_nbr, log
-output_path = "./results/"
-data = []
-pictures_dim = (10, 10)
-neuron_nbr = 12
-log = True
-
 
 class Dataset:
     def __init__(self, path):
@@ -71,9 +63,10 @@ class Dataset:
 
 def load_image_folder(path):
     files = os.listdir(path)
+    data = []
     for f in files:
         data.extend(Dataset(path + f).data)
     for i in range(len(data)):  # Normalizing
         data[i] = data[i] / 256
-
+    return data
 

@@ -1,6 +1,12 @@
 import numpy as np
 from scipy.sparse.csgraph import floyd_warshall
-from heapq import *
+
+
+# Global variables
+global output_path, pictures_dim, neuron_nbr
+output_path = "./results/"
+pictures_dim = (10, 10)
+neuron_nbr = 21
 
 
 class Edge:
@@ -11,9 +17,6 @@ class Edge:
 
     def to_string(self):
         return self.in_vertex+"--"+str(self.weight)+"-->"+self.out_vertex
-
-    def __lt__(self, other):
-        return self.weight < other.weight
 
 
 class Graph:
@@ -73,34 +76,28 @@ class Graph:
         g = Graph()
         for e in finished:
             g.add_edge(e)
+        g.set_neuron_id()
         return g
 
-    def test(self):
-        global open_list, hash_map, current, dist
-        open_list = []
-        hash_map = [[] for i in range(len(self.vertex_list))]
-        dist = self.get_adjacency_matrix()
-        for e in self.edges_list:
-            hash_map[self.vertex_list[e.in_vertex]].append(e)
-            heappush(open_list, e)
-
-        while open_list:
-            current = heappop(open_list)
-            self.update()
-
-        return dist
-
-    def update(self):
-        if current.weight == dist[self.vertex_list[current.in_vertex], self.vertex_list[current.out_vertex]]:
-            for e in hash_map[self.vertex_list[current.out_vertex]]:
-                w = current.weight + e.weight
-                if w < dist[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]]:
-                    dist[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]] = w
-                    new = Edge(current.in_vertex, e.out_vertex, w)
-                    heappush(open_list, new)
+    def set_neuron_id(self):
+        for v in self.vertex_list.keys():
+            str = v[1:].split(',')
+            self.vertex_list[v] = int(str[0])*neuron_nbr+int(str[1])
 
     def to_string(self):
         res = "Vertices : "+str(self.vertex_list)+"\nEdges :\n"
         for e in self.edges_list:
-            res += e.to_string+"\n"
+            res += e.to_string()+"\n"
         return res
+
+    def print(self):
+        res = ""
+        adj = self.get_all_shortest_paths()
+        for i in range(len(adj)):
+            for j in range(len(adj[0])):
+                if adj[i][j] == np.Infinity:
+                    res += "0 "
+                else:
+                    res += str(adj[i][j])+" "
+            res +="\n"
+        print(res)
