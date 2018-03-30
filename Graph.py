@@ -31,6 +31,11 @@ class Graph:
             self.vertex_list[edge.out_vertex] = len(self.vertex_list)
         self.edges_list.append(edge)
 
+    def remove_edge(self, vertex_in, vertex_out):
+        for e in self.edges_list:
+            if e.in_vertex == vertex_in and e.out_vertex == vertex_out:
+                self.edges_list.remove(e)
+
     def get_adjacency_matrix(self):
         adjacency_matrix = np.full((len(self.vertex_list), len(self.vertex_list)), np.Infinity)
         for e in self.edges_list:

@@ -85,16 +85,29 @@ class SOM:
 
         self.adj = self.global_connections.get_adjacency_matrix()
         self.global_connections.extract_neurons_graph()
+        self.neural_graph = self.global_connections.extract_neurons_graph()
+        self.neural_graph.print()
+        print(self.neural_graph.to_string())
         self.compute_neurons_distance()
-        print(self.neural_dist)
-        self.MDist = np.array(self.neural_dist)
-        self.MDist = np.divide(self.MDist, np.max(self.MDist))  # Normalizing the distances
 
     def compute_neurons_distance(self):
-        g = self.global_connections.extract_neurons_graph()
-        g.print()
-        print(g.to_string())
-        self.neural_dist = g.get_all_shortest_paths()
+        self.neural_dist = self.neural_graph.get_all_shortest_paths()
+        print(self.neural_dist)
+        self.MDist = np.array(self.neural_dist)
+
+        maximum = -1
+        for i in range(neuron_nbr):
+            for j in range(neuron_nbr):
+                if self.MDist[i][j] != np.Infinity and self.MDist[i][j] > maximum:
+                    maximum = self.MDist[i][j]
+        self.MDist = np.divide(self.MDist, maximum)  # Normalizing the distances
+
+    def remove_edges(self, v1, v2):
+        inp = "n"+str(v1[0])+','+str(v1[1])
+        out = "n"+str(v2[0])+','+str(v2[1])
+        self.neural_graph.remove_edge(inp, out)
+        self.neural_graph.remove_edge(out, inp)
+        self.compute_neurons_distance()
 
     @staticmethod
     def get_index(x, y):
@@ -144,7 +157,8 @@ class SOM:
         for i in range(self.n):
             for j in range(self.n):
                 dist = self.MDist[bmu[1]*self.n+bmu[0], j*self.n+i]
-                self.nodes[i, j].weight += f(dist, self.sigma)*self.epsilon*(vector-self.nodes[i, j].weight)
+                if dist != np.Infinity:
+                    self.nodes[i, j].weight += f(dist, self.sigma)*self.epsilon*(vector-self.nodes[i, j].weight)
 
     def fully_random_vector(self):
         return np.random.randint(np.shape(self.data)[0])
