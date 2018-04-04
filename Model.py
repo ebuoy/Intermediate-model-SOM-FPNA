@@ -29,12 +29,12 @@ def compute_mean_error(datacomp, datamat, SOMList):
 
 def run():
     img = Dataset("./image/Audrey.png")
-    data = img.data  # load_image_folder("./image/")
+    data = load_image_folder("./image/")
 
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numéro du neurone vainqueur pour l'imagette correspondante
     old = datacomp
 
-    nb_epoch = 100
+    nb_epoch = 10
     epoch_time = len(data)
     nb_iter = epoch_time * nb_epoch
 
@@ -49,8 +49,8 @@ def run():
             print("Changed values :", diff)
             print("Mean error : ", compute_mean_error(datacomp, data, carte.getmaplist()))
             old = np.array(datacomp)
-            if i // epoch_time % 10 == 0 and i // epoch_time > nb_epoch/2:
-                carte.cut_close_neighbors()
+            # if i // epoch_time % 10 == 0 and i // epoch_time > nb_epoch/2:
+            #     carte.cut_close_neighbors()
 
     img.compression(carte)
     display_som(carte.getmaplist())

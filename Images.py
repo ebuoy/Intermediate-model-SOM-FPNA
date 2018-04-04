@@ -66,7 +66,5 @@ def load_image_folder(path):
     data = []
     for f in files:
         data.extend(Dataset(path + f).data)
-    for i in range(len(data)):  # Normalizing
-        data[i] = data[i] / 256
     return data
 
