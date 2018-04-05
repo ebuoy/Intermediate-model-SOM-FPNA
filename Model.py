@@ -34,11 +34,11 @@ def run():
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numéro du neurone vainqueur pour l'imagette correspondante
     old = datacomp
 
-    nb_epoch = 10
+    nb_epoch = 100
     epoch_time = len(data)
     nb_iter = epoch_time * nb_epoch
 
-    carte = SOM(neuron_nbr, data, nb_epoch, kohonen())
+    carte = SOM(neuron_nbr, data, nb_epoch, small_worlds())
 
     for i in range(nb_iter):
         vect, iwin, jwin = carte.train(i, epoch_time)

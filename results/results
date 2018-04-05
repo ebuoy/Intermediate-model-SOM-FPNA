@@ -1,0 +1,18 @@
+SOM SW 29x29
+
+Mean error :  7.568356200756631
+Used neurons : 550 / 841 ( 65.39833531510108 %)
+Mean error :  7.371882037027267
+Used neurons : 531 / 841 ( 63.13912009512486 %)
+
+SOM SW 39x39
+
+Mean error :  6.472848801414313
+Used neurons : 658 / 1521 ( 43.26101249178173 %)
+
+SOM SW ALL 21x21
+
+Mean error :  8.948748394762529
+Used neurons : 271 / 441 ( 61.451247165532884 %)
+
+
