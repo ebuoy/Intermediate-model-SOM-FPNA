@@ -26,6 +26,7 @@ class Neurone:
         self.x = i/cote
         self.y = j/cote
         self.n = cote**2
+        self.t = 1
         self.matC = connections
         self.set_random_weights(data)
 
@@ -95,7 +96,6 @@ class SOM:
         self.compute_neurons_distance()
         print(self.neural_dist)
 
-
     def compute_neurons_distance(self):
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
         self.MDist = np.array(self.neural_dist)
@@ -107,7 +107,7 @@ class SOM:
                     maximum = self.MDist[i][j]
         self.MDist = np.divide(self.MDist, maximum)  # Normalizing the distances
 
-    def remove_edges(self, v1, v2):
+    def remove_edges(self, v1, v2): # remove_edges((x, y), (x2, y2))
         inp = "n"+str(v1[0])+','+str(v1[1])
         out = "n"+str(v2[0])+','+str(v2[1])
         self.neural_graph.remove_edge(inp, out)
@@ -138,6 +138,7 @@ class SOM:
         dist = np.empty_like(self.nodes)
         for i in range(self.n):  # Computes the distances between the tested vector and all nodes
             for j in range(self.n):
+                self.nodes[i, j].t += 1
                 dist[i][j] = distance(self.nodes[i, j].weight, vector)
         return np.unravel_index(np.argmin(dist, axis=None), dist.shape)  # Returning the Best Matching Unit's index.
 
@@ -153,6 +154,7 @@ class SOM:
 
         # Getting the Best matching unit
         bmu = self.winner(vector, distance)
+        self.nodes[bmu].t = 1
         self.updating_weights(bmu, vector, f)
 
         return vector_coordinates, bmu[0], bmu[1]
@@ -174,6 +176,22 @@ class SOM:
                         if dist < 1:
                             print("Removed (", i, ",", j, ") - (", i2, ",", j2, ") distance : ", dist)
                             self.remove_edges((i, j), (i2, j2))
+
+    def pruning_neighbors(self):
+        for i in range(self.n-1):
+            for j in range(self.n-1):
+                self.pruning_check(i, j, i+1, j)
+                self.pruning_check(i, j, i, j+1)
+
+    def pruning_check(self, x1, y1, x2, y2):
+        one = y1*self.n + x1
+        two = y2*self.n + x2
+        if self.adj[one][two] != 0:
+            diff = dist(self.nodes[x1, y1].weight, self.nodes[x2, y2].weight)
+            proba = np.exp(-1/omega * 1/(diff * self.nodes[x1, y1].t * self.nodes[x2, y2].t))
+            if np.random.rand() < proba:
+                print("Removed (", x1, ",", y1, ") - (", x2, ",", y2, ") probability : ", proba)
+                self.remove_edges((x1, y1), (x2, y2))
 
 
     def fully_random_vector(self):
