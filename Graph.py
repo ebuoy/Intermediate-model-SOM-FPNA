@@ -5,9 +5,9 @@ from scipy.sparse.csgraph import floyd_warshall
 # Global variables
 global output_path, pictures_dim, neuron_nbr
 output_path = "./results/"
-pictures_dim = (10, 10)
-neuron_nbr = 10
-omega = 10**(-7)
+pictures_dim = (5, 5)
+neuron_nbr = 20
+omega = 10**(-9)
 
 
 class Edge:

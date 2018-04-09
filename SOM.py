@@ -33,6 +33,7 @@ class Neurone:
     def set_random_weights(self, data):
         if len(data.shape) == 2:
             self.weight = np.max(data)*np.random.random(data.shape[1])
+
         else:
             self.weight = [[] for i in range (data.shape[0])]
             for i in range(data.shape[0]):
@@ -98,6 +99,7 @@ class SOM:
 
     def compute_neurons_distance(self):
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
+        self.adj = self.neural_graph.get_adjacency_matrix()
         self.MDist = np.array(self.neural_dist)
 
         maximum = -1
@@ -112,7 +114,6 @@ class SOM:
         out = "n"+str(v2[0])+','+str(v2[1])
         self.neural_graph.remove_edge(inp, out)
         self.neural_graph.remove_edge(out, inp)
-        self.compute_neurons_distance()
 
     @staticmethod
     def get_index(x, y):
@@ -182,6 +183,7 @@ class SOM:
             for j in range(self.n-1):
                 self.pruning_check(i, j, i+1, j)
                 self.pruning_check(i, j, i, j+1)
+        self.compute_neurons_distance()
 
     def pruning_check(self, x1, y1, x2, y2):
         one = y1*self.n + x1
