@@ -41,3 +41,24 @@ def fully_connected_small_worlds():
         for j in range(neuron_nbr):
             connexion_matrix[i, j] = pattern[i % 3][j % 3]
     return connexion_matrix
+
+
+def star():
+    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
+    pattern = [[star_corner_left, star_top, star_corner_right],
+               [star_left, kohonen_matrix, star_right],
+               [star_corner_left, star_bottom, star_corner_right]]
+    for i in range(neuron_nbr):
+        for j in range(neuron_nbr):
+            connexion_matrix[i, j] = pattern[i % 3][j % 3]
+    return connexion_matrix
+
+def random():
+    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
+    pattern = [[star_corner_left, star_top, star_corner_right],
+               [star_left, kohonen_matrix, star_right],
+               [star_corner_left, star_bottom, star_corner_right]]
+    for i in range(neuron_nbr):
+        for j in range(neuron_nbr):
+            connexion_matrix[i, j] = pattern[i % 3][j % 3]
+    return connexion_matrix
