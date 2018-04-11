@@ -114,6 +114,8 @@ class SOM:
         out = "n"+str(v2[0])+','+str(v2[1])
         self.neural_graph.remove_edge(inp, out)
         self.neural_graph.remove_edge(out, inp)
+        self.adj[v1[0]*self.n+v1[1]][v2[0]*self.n+v2[1]] = np.Inf
+        self.adj[v2[0]*self.n+v2[1]][v1[0]*self.n+v1[1]] = np.Inf
 
     @staticmethod
     def get_index(x, y):
@@ -185,16 +187,15 @@ class SOM:
                 self.pruning_check(i, j, i, j+1)
         self.compute_neurons_distance()
 
-    def pruning_check(self, x1, y1, x2, y2):
+    def pruning_check(self, y1, x1, y2, x2):
         one = y1*self.n + x1
         two = y2*self.n + x2
         if self.adj[one][two] != 0:
-            diff = dist(self.nodes[x1, y1].weight, self.nodes[x2, y2].weight)
-            proba = np.exp(-1/omega * 1/(diff * self.nodes[x1, y1].t * self.nodes[x2, y2].t))
+            diff = dist(self.nodes[y1, x1].weight, self.nodes[y2, x2].weight)
+            proba = np.exp(-1/omega * 1/(diff * self.nodes[y1, x1].t * self.nodes[y2, x2].t))
             if np.random.rand() < proba:
-                print("Removed (", x1, ",", y1, ") - (", x2, ",", y2, ") probability : ", proba)
-                self.remove_edges((x1, y1), (x2, y2))
-
+                print("Removed (", y1, ",", x1, ") - (", y2, ",", x2, ") probability : ", proba)
+                self.remove_edges((y1, x1), (y2, x2))
 
     def fully_random_vector(self):
         return np.random.randint(np.shape(self.data)[0])
