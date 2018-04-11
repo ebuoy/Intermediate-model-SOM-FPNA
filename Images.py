@@ -1,8 +1,6 @@
-from SOM import *
 from PIL import Image
+from Parameters import *
 import os
-
-np.set_printoptions(threshold=np.inf)
 
 
 class Dataset:
@@ -33,7 +31,7 @@ class Dataset:
             print("\tWarning - image size is not divisible by pictures dimensions, the result will be cropped")
 
     def compression(self, som):
-        som_map = som.getmap()
+        som_map = som.get_som_as_map()
         pixels = []
         winners = []
         for i in range(len(self.data)):

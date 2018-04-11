@@ -1,5 +1,5 @@
-from Images import *
 from Connections_Models import *
+from Parameters import *
 
 
 def kohonen():
@@ -53,7 +53,8 @@ def star():
             connexion_matrix[i, j] = pattern[i % 3][j % 3]
     return connexion_matrix
 
-def random():
+
+def random():  # TODO : implement
     connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
     pattern = [[star_corner_left, star_top, star_corner_right],
                [star_left, kohonen_matrix, star_right],

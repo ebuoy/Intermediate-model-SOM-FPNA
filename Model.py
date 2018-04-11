@@ -1,7 +1,6 @@
 from Images import *
 from SOM import *
 from Connections import *
-np.set_printoptions(threshold=np.inf)  # used to display numpy arrays in full
 
 
 def display_som(som_list):
@@ -28,32 +27,30 @@ def compute_mean_error(datacomp, datamat, SOMList):
 
 
 def run():
-    img = Dataset("./image/old/Audrey.png")
-    data = load_image_folder("./image/old/")
+    img = Dataset("./image/Audrey.png")
+    data = img.data # load_image_folder("./image/")
 
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numéro du neurone vainqueur pour l'imagette correspondante
     old = datacomp
 
-    nb_epoch = 100
     epoch_time = len(data)
-    nb_iter = epoch_time * nb_epoch
+    nb_iter = epoch_time * epoch_nbr
 
-    carte = SOM(neuron_nbr, data, nb_epoch, star())
+    carte = SOM(data, kohonen())
 
     for i in range(nb_iter):
         vect, iwin, jwin = carte.train(i, epoch_time)
-        datacomp[vect] = iwin * neuron_nbr + jwin
+        datacomp[vect] = jwin * neuron_nbr + iwin
         if i % epoch_time == 0:
-            print("Epoch : ", i // epoch_time + 1, "/", nb_epoch)
+            print("Epoch : ", i // epoch_time + 1, "/", epoch_nbr)
             diff = np.count_nonzero(datacomp - old)
             print("Changed values :", diff)
-            print("Mean error : ", compute_mean_error(datacomp, data, carte.getmaplist()))
+            print("Mean error : ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
             old = np.array(datacomp)
-            # carte.pruning_neighbors()
-            # if i // epoch_time % 10 == 0 and i // epoch_time > nb_epoch/2:
-            #     carte.cut_close_neighbors()
+            if psom:
+                carte.pruning_neighbors()
 
-    # carte.neural_graph.print()
+    carte.neural_graph.print()
     img.compression(carte)
-    display_som(carte.getmaplist())
+    display_som(carte.get_som_as_list())
 

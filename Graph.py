@@ -1,13 +1,5 @@
-import numpy as np
+from Parameters import *
 from scipy.sparse.csgraph import floyd_warshall
-
-
-# Global variables
-global output_path, pictures_dim, neuron_nbr
-output_path = "./results/"
-pictures_dim = (10, 10)
-neuron_nbr = 21
-omega = 10**(-9)
 
 
 class Edge:
@@ -51,14 +43,6 @@ class Graph:
     def get_all_shortest_paths(self):
         return floyd_warshall(self.get_adjacency_matrix())
 
-    def get_shortest_paths(self, chosen_vertex):
-        dist_matrix = self.get_all_shortest_paths()
-        chosen_dist = np.full((len(chosen_vertex), len(chosen_vertex)), np.Infinity)
-        for i in range(len(chosen_vertex)):
-            for j in range(len(chosen_vertex)):
-                chosen_dist[i, j] = dist_matrix[self.vertex_list[chosen_vertex[i]], self.vertex_list[chosen_vertex[j]]]
-        return chosen_dist
-
     def extract_neurons_graph(self):
         new_edges_list = []
         link_edges_list = []
@@ -88,7 +72,7 @@ class Graph:
     def set_neuron_id(self):
         for v in self.vertex_list.keys():
             str = v[1:].split(',')
-            self.vertex_list[v] = int(str[0])*neuron_nbr+int(str[1])
+            self.vertex_list[v] = int(str[1])*neuron_nbr+int(str[0])
 
     def to_string(self):
         res = "Vertices : "+str(self.vertex_list)+"\nEdges :\n"
@@ -104,6 +88,6 @@ class Graph:
                 if adj[i][j] == np.Infinity:
                     res += "0 "
                 else:
-                    res += str(adj[i][j])+" "
-            res +="\n"
+                    res += str(int(adj[i][j]))+" "
+            res += "\n"
         print(res)
