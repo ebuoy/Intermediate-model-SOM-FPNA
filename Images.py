@@ -1,3 +1,4 @@
+import numpy as np
 from SOM import *
 from PIL import Image
 import os
@@ -14,7 +15,7 @@ class Dataset:
     def load_image(self, path):
         self.data = []
         im = Image.open(path)
-        size = np.flip(im.size, 0)  # For some strange reason the data isn't ordered in the same way as the size says
+        size = np.flip(im.size,0)  # For some strange reason the data isn't ordered in the same way as the size says
         px = np.array(im.getdata(), 'uint8')
         if len(px.shape) == 2:  # File has RGB colours
             px = np.hsplit(px, 3)[0]
@@ -32,7 +33,7 @@ class Dataset:
         if size[0] / pictures_dim[0] != self.nb_pictures[0] or size[0] / pictures_dim[0] != self.nb_pictures[0]:
             print("\tWarning - image size is not divisible by pictures dimensions, the result will be cropped")
 
-    def compression(self, som):
+    def compression(self, som, name):
         som_map = som.getmap()
         pixels = []
         winners = []
@@ -54,8 +55,8 @@ class Dataset:
         px = np.array(px, 'uint8')
 
         file = Image.fromarray(px)
-        file.show()
-        file.save(output_path+"one.png")
+        #file.show()
+        file.save(output_path+name)
 
         n = neuron_nbr*neuron_nbr
         print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")

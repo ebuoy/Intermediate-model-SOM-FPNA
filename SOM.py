@@ -1,9 +1,11 @@
 import numpy as np
 import random
+import copy
 from Graph import *
 
 
 def dist_quad(x, y):
+    assert np.array_equal(np.array(x.shape),np.array(y.shape))
     return np.sum((x - y) ** 2)
 
 
@@ -42,9 +44,21 @@ class Neurone:
 
 
 class SOM:
+    def copy(self):
+        cop = copy.deepcopy(self)
+        #cop = SOM(self.n,self.data,0,kohonen(),dist_quad)
+        #cop.data = self.data
+        #cop.nodes = deepcopy(self.nodes)
+        #cop.global_connections = self.global_connections.copy()
+        #cop.neural_dist = deepcopy(self.neural_dist)
+        #cop.MDist
+        #cop.adj
+        #cop.neural_graph
+        return cop
+    
     def __init__(self, n, data, nbEpoch, MC,  distance=dist_quad): # vraies variables : self, n, data, nbEpoch, MC, distance=dist_quad
         
-        # Définition des paramètres nécessaires à l'entraînement
+        # Definition des parametres necessaires a l'entrainement
         self.eps0 = 0.9
         self.epsEnd = 0.01
         self.epsilon = self.eps0
@@ -55,7 +69,7 @@ class SOM:
         self.sigma = self.sig0
         self.sigma_stepping = (self.sigEnd - self.sig0) / nbEpoch
         
-        self.n = int(n)  # nombre de neurones choisis par ligne pour mod�liser les données
+        self.n = int(n)  # nombre de neurones choisis par ligne pour modeliser les donnees
         self.data = np.array(data)/255
         
         # Initialisation de la grille
@@ -82,19 +96,20 @@ class SOM:
             for j in range(self.n):
                 for k in range(5):
                     for l in range(5):
-                        if self.nodes[j, i].matC[k, l] != 0:
+                        if self.nodes[i, j].matC[k, l] != 0:
                             inp = SOM.get_index(k, 'i')+str(i)+','+str(j)
                             out = SOM.get_index(l, 'o')+str(i)+','+str(j)
                             e = Edge(inp, out, SOM.neurons_only_weight(k, l))
                             self.global_connections.add_edge(e)
 
-        self.adj = self.global_connections.get_adjacency_matrix()
-        self.global_connections.extract_neurons_graph()
+        #self.adj = self.global_connections.get_adjacency_matrix()
+        #self.global_connections.extract_neurons_graph()
         self.neural_graph = self.global_connections.extract_neurons_graph()
-        self.neural_graph.print()
-        print(self.neural_graph.to_string())
+        self.adj = self.neural_graph.get_binary_adjacency_matrix()
+        #self.neural_graph.printgraph()
+        #print(self.neural_graph.to_string())
         self.compute_neurons_distance()
-        print(self.neural_dist)
+        #print(self.neural_dist)
 
     def compute_neurons_distance(self):
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
@@ -112,6 +127,8 @@ class SOM:
         out = "n"+str(v2[0])+','+str(v2[1])
         self.neural_graph.remove_edge(inp, out)
         self.neural_graph.remove_edge(out, inp)
+        self.adj[v1[0]*self.n+v1[1]][v2[0]*self.n+v2[1]] = 0
+        self.adj[v2[0]*self.n+v2[1]][v1[0]*self.n+v1[1]] = 0
         self.compute_neurons_distance()
 
     @staticmethod
@@ -142,14 +159,18 @@ class SOM:
                 dist[i][j] = distance(self.nodes[i, j].weight, vector)
         return np.unravel_index(np.argmin(dist, axis=None), dist.shape)  # Returning the Best Matching Unit's index.
 
-    def train(self, k, epoch_time, f=normalized_gaussian, distance=dist_quad):
+    def winners(self):
+        datacomp = np.zeros(len(self.data), int)  # datacomp est la liste du numero du neurone vainqueur pour l'imagette correspondante
+        for i in range(len(self.data)):
+            bmu = self.winner(self.data[i])
+            datacomp[i] = bmu[0]*neuron_nbr+bmu[1]
+        return datacomp
+
+    def train(self, k, epoch_time, vector_coordinates, f=normalized_gaussian, distance=dist_quad):
         if k % epoch_time == 0:
             self.epsilon += self.epsilon_stepping
             self.sigma += self.sigma_stepping
-            self.generate_random_list()
 
-        # The training vector is chosen randomly
-        vector_coordinates = self.unique_random_vector()
         vector = self.data[vector_coordinates]
 
         # Getting the Best matching unit
@@ -157,7 +178,7 @@ class SOM:
         self.nodes[bmu].t = 1
         self.updating_weights(bmu, vector, f)
 
-        return vector_coordinates, bmu[0], bmu[1]
+        return bmu[0], bmu[1]
 
     def updating_weights(self, bmu, vector, f=normalized_gaussian):
         # Updating weights of all nodes
@@ -182,10 +203,11 @@ class SOM:
             for j in range(self.n-1):
                 self.pruning_check(i, j, i+1, j)
                 self.pruning_check(i, j, i, j+1)
+        #print(self.adj)
 
     def pruning_check(self, x1, y1, x2, y2):
-        one = y1*self.n + x1
-        two = y2*self.n + x2
+        one = x1*self.n + y1
+        two = x2*self.n + y2
         if self.adj[one][two] != 0:
             diff = dist(self.nodes[x1, y1].weight, self.nodes[x2, y2].weight)
             proba = np.exp(-1/omega * 1/(diff * self.nodes[x1, y1].t * self.nodes[x2, y2].t))
