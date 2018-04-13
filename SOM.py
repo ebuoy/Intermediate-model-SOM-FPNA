@@ -3,7 +3,7 @@ import copy
 
 
 def dist_quad(x, y):
-    assert np.array_equal(np.array(x.shape),np.array(y.shape))
+    assert np.array_equal(np.array(x.shape), np.array(y.shape))
     return np.sum((x - y) ** 2)
 
 
@@ -29,18 +29,6 @@ class Neurone:
 
 
 class SOM:
-    def copy(self):
-        cop = copy.deepcopy(self)
-        #cop = SOM(self.n,self.data,0,kohonen(),dist_quad)
-        #cop.data = self.data
-        #cop.nodes = deepcopy(self.nodes)
-        #cop.global_connections = self.global_connections.copy()
-        #cop.neural_dist = deepcopy(self.neural_dist)
-        #cop.MDist
-        #cop.adj
-        #cop.neural_graph
-        return cop
-
     def __init__(self, data, connexion_matrices):
         self.epsilon = epsilon_start
         self.epsilon_stepping = (epsilon_end - epsilon_start) / epoch_nbr
@@ -71,9 +59,13 @@ class SOM:
         self.neural_graph = self.global_connections_graph.extract_neurons_graph()
         self.compute_neurons_distance()
 
-        self.neural_graph.print()  # TODO : Setup logs
-        print(self.neural_graph.to_string())
-        print(self.neural_dist)
+        if log_graphs:
+            self.neural_graph.print_graph()  # TODO : Setup logs
+            print(self.neural_graph.to_string())
+            print(self.neural_dist)
+
+    def copy(self):
+        return copy.deepcopy(self)
 
     def generate_global_connections_graph(self):
         self.global_connections_graph = Graph()
@@ -86,7 +78,7 @@ class SOM:
                 if x != neuron_nbr-1:
                     self.global_connections_graph.add_edge(Edge("Eo"+str(x)+","+str(y), "Wi"+str(x+1)+","+str(y), 0))
                 if x != 0:
-                    self.global_connections_graph.add_edge(Edge("Wo"+str(x)+","+str(y), "Ei"+str(y-1)+","+str(y), 0))
+                    self.global_connections_graph.add_edge(Edge("Wo"+str(x)+","+str(y), "Ei"+str(x-1)+","+str(y), 0))
 
         for x in range(neuron_nbr):
             for y in range(neuron_nbr):
@@ -102,6 +94,7 @@ class SOM:
         self.neural_adjacency_matrix = self.neural_graph.get_adjacency_matrix()
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
         self.neural_dist = self.neural_dist.astype(int)  # /!\there is a numpy bug that converts inf to a negative value
+        print(self.neural_dist)
         self.distance_vector = np.empty(np.max(self.neural_dist)+1, dtype=float)
 
     @staticmethod
@@ -133,20 +126,22 @@ class SOM:
         return np.unravel_index(np.argmin(dist, axis=None), dist.shape)  # Returning the Best Matching Unit's index.
 
     def winners(self):
-        datacomp = np.zeros(len(self.data), int)  # datacomp est la liste du numero du neurone vainqueur pour l'imagette correspondante
+        datacomp = np.zeros(len(self.data), dtype=int)  # datacomp est la liste du numero du neurone vainqueur pour l'imagette correspondante
         for i in range(len(self.data)):
             bmu = self.winner(self.data[i])
-            datacomp[i] = bmu[0]*neuron_nbr+bmu[1]
+            datacomp[i] = bmu[1]*neuron_nbr+bmu[0]
         return datacomp
 
     def train(self, iteration, epoch_time, vector_coordinates, f=normalized_gaussian, distance=dist_quad):
         if iteration % epoch_time == 0:
             self.epsilon += self.epsilon_stepping
             self.sigma += self.sigma_stepping
-            self.generate_random_list()
+            if psom:
+                self.pruning_neighbors()
             for i in range(len(self.distance_vector)):
                 self.distance_vector[i] = f(i/(len(self.distance_vector)-1), self.sigma)
-            print(self.distance_vector)
+            if log_gaussian_vector:
+                print(self.distance_vector)
 
         vector = self.data[vector_coordinates]
 

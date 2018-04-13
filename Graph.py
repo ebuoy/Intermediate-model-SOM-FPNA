@@ -20,11 +20,7 @@ class Graph:
         self.vertex_list = {}
 
     def copy(self):
-        cop = copy.deepcopy(self)
-        #cop = Graph()
-        #cop.edges_list = np.deepcopy(self.edges_list)
-        #cop.vertex_list = np.deepcopy(self.vertex_list)
-        return cop
+        return copy.deepcopy(self)
 
     def add_edge(self, edge):
         if edge.in_vertex not in self.vertex_list:
@@ -97,7 +93,7 @@ class Graph:
             res += e.to_string()+"\n"
         return res
 
-    def printgraph(self):
+    def print_graph(self):
         res = ""
         adj = self.get_adjacency_matrix()
         for i in range(len(adj)):

@@ -2,9 +2,11 @@ from Images import *
 from SOM import *
 from Connections import *
 
+
 def noLink():
     pix = np.full(pictures_dim,255)
     return pix
+
 
 def hLink():
     pix = np.full(pictures_dim,255)
@@ -13,12 +15,14 @@ def hLink():
         pix[mid][j]=0
     return pix
 
+
 def vLink():
     pix = np.full(pictures_dim,255)
     mid = pictures_dim[1]//2
     for i in range(pictures_dim[0]):
         pix[i][mid]=0
     return pix
+
 
 def display_som(som_list,adj):
     #px2 = []
@@ -50,7 +54,6 @@ def display_som(som_list,adj):
     px = np.array(px, 'uint8')
 
     som_image = Image.fromarray(px)
-    #som_image.show()
     return som_image
 
 
@@ -64,57 +67,33 @@ def compute_mean_error(datacomp, datamat, SOMList):
 def run():
     img = Dataset("./image/Audrey.png")
     data = img.data
-    #data = load_image_folder("./image/")
+    # data = load_image_folder("./image/")
 
     datacomp = np.zeros(len(data), int)  # datacomp est la liste du numero du neurone vainqueur pour l'imagette correspondante
     old = np.array(datacomp)
-    Pold = np.array(datacomp)
-    Pdatacomp = np.array(datacomp)
 
     epoch_time = len(data)
     nb_iter = epoch_time * epoch_nbr
 
-    carte = SOM(neuron_nbr, data, epoch_nbr, kohonen())
-    Pcarte = carte.copy()
-
+    carte = SOM(data, star())
     datacomp = carte.winners()
-    Pdatacomp = Pcarte.winners()
-    print("Initial mean error SOM: ", compute_mean_error(datacomp, data, carte.getmaplist()))
-    print("Initial mean error PSOM : ", compute_mean_error(Pdatacomp, data, Pcarte.getmaplist()))
+
+    print("Initial mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
     for i in range(nb_iter):
-         # The training vector is chosen randomly
+        # The training vector is chosen randomly
         if i % epoch_time == 0:
              carte.generate_random_list()
-
         vect = carte.unique_random_vector()
-        iwin, jwin = carte.train(i, epoch_time, vect)
-        Piwin, Pjwin = Pcarte.train(i, epoch_time, vect)
-        #datacomp[vect] = iwin * neuron_nbr + jwin
-        #Pdatacomp[vect] = Piwin * neuron_nbr + Pjwin
+
+        carte.train(i, epoch_time, vect)
         if (i+1) % epoch_time == 0:
-            print("Epoch : ", (i+1) // epoch_time , "/", nb_epoch)
+            print("Epoch : ", (i+1) // epoch_time, "/", epoch_nbr)
             datacomp = carte.winners()
-            #print(datacomp)
-            Pdatacomp = Pcarte.winners()
             diff = np.count_nonzero(datacomp - old)
-            Pdiff = np.count_nonzero(Pdatacomp - Pold)
             print("Changed values SOM :", diff)
-            print("Changed values PSOM :", Pdiff)
-            print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.getmaplist()))
-            print("Mean error PSOM : ", compute_mean_error(Pdatacomp, data, Pcarte.getmaplist()))
+            print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
             old = np.array(datacomp)
-            Pold = np.array(Pdatacomp)
-            Pcarte.pruning_neighbors()
-            # if i // epoch_time % 10 == 0 and i // epoch_time > nb_epoch/2:
-            #     carte.cut_close_neighbors()
 
-    img.compression(carte,"comp2.png")
-    im1 = display_som(carte.getmaplist(),carte.adj)
-    im1.save("./carte2.png")
-
-    img.compression(Pcarte,"Pcomp2.png")
-    im2 = display_som(Pcarte.getmaplist(),Pcarte.adj)
-    im2.save("./Pcarte2.png")
-
-# Model :
-run()
+    img.compression(carte, "comp.png")
+    im1 = display_som(carte.get_som_as_list(), carte.neural_adjacency_matrix)
+    im1.save(output_path+"carte.png")
