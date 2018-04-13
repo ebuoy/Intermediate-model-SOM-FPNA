@@ -1,4 +1,6 @@
 from Parameters import *
+import numpy as np
+import copy
 from scipy.sparse.csgraph import floyd_warshall
 
 
@@ -16,6 +18,13 @@ class Graph:
     def __init__(self):
         self.edges_list = []
         self.vertex_list = {}
+
+    def copy(self):
+        cop = copy.deepcopy(self)
+        #cop = Graph()
+        #cop.edges_list = np.deepcopy(self.edges_list)
+        #cop.vertex_list = np.deepcopy(self.vertex_list)
+        return cop
 
     def add_edge(self, edge):
         if edge.in_vertex not in self.vertex_list:
@@ -36,6 +45,14 @@ class Graph:
                 adjacency_matrix[self.vertex_list[e.in_vertex], self.vertex_list[e.out_vertex]] = 0.01
             else:
                 adjacency_matrix[self.vertex_list[e.in_vertex], self.vertex_list[e.out_vertex]] = e.weight
+        for v in self.vertex_list:
+            adjacency_matrix[self.vertex_list[v], self.vertex_list[v]] = 0
+        return adjacency_matrix
+
+    def get_binary_adjacency_matrix(self):
+        adjacency_matrix = np.full((len(self.vertex_list), len(self.vertex_list)), 0)
+        for e in self.edges_list:
+            adjacency_matrix[self.vertex_list[e.in_vertex], self.vertex_list[e.out_vertex]] = 1
         for v in self.vertex_list:
             adjacency_matrix[self.vertex_list[v], self.vertex_list[v]] = 0
         return adjacency_matrix
@@ -80,7 +97,7 @@ class Graph:
             res += e.to_string()+"\n"
         return res
 
-    def print(self):
+    def printgraph(self):
         res = ""
         adj = self.get_adjacency_matrix()
         for i in range(len(adj)):

@@ -1,7 +1,9 @@
 from Graph import *
+import copy
 
 
 def dist_quad(x, y):
+    assert np.array_equal(np.array(x.shape),np.array(y.shape))
     return np.sum((x - y) ** 2)
 
 
@@ -27,6 +29,18 @@ class Neurone:
 
 
 class SOM:
+    def copy(self):
+        cop = copy.deepcopy(self)
+        #cop = SOM(self.n,self.data,0,kohonen(),dist_quad)
+        #cop.data = self.data
+        #cop.nodes = deepcopy(self.nodes)
+        #cop.global_connections = self.global_connections.copy()
+        #cop.neural_dist = deepcopy(self.neural_dist)
+        #cop.MDist
+        #cop.adj
+        #cop.neural_graph
+        return cop
+
     def __init__(self, data, connexion_matrices):
         self.epsilon = epsilon_start
         self.epsilon_stepping = (epsilon_end - epsilon_start) / epoch_nbr
@@ -118,7 +132,14 @@ class SOM:
                 dist[x, y] = distance(self.nodes[x, y].weight, vector)
         return np.unravel_index(np.argmin(dist, axis=None), dist.shape)  # Returning the Best Matching Unit's index.
 
-    def train(self, iteration, epoch_time, f=normalized_gaussian, distance=dist_quad):
+    def winners(self):
+        datacomp = np.zeros(len(self.data), int)  # datacomp est la liste du numero du neurone vainqueur pour l'imagette correspondante
+        for i in range(len(self.data)):
+            bmu = self.winner(self.data[i])
+            datacomp[i] = bmu[0]*neuron_nbr+bmu[1]
+        return datacomp
+
+    def train(self, iteration, epoch_time, vector_coordinates, f=normalized_gaussian, distance=dist_quad):
         if iteration % epoch_time == 0:
             self.epsilon += self.epsilon_stepping
             self.sigma += self.sigma_stepping
@@ -127,8 +148,6 @@ class SOM:
                 self.distance_vector[i] = f(i/(len(self.distance_vector)-1), self.sigma)
             print(self.distance_vector)
 
-        # The training vector is chosen randomly
-        vector_coordinates = self.unique_random_vector()
         vector = self.data[vector_coordinates]
 
         # Getting the Best matching unit
@@ -136,7 +155,7 @@ class SOM:
         self.nodes[bmu].t = 1
         self.updating_weights(bmu, vector)
 
-        return vector_coordinates, bmu[0], bmu[1]
+        return bmu[0], bmu[1]
 
     def updating_weights(self, bmu, vector):
         for x in range(neuron_nbr):  # Updating weights of all nodes
