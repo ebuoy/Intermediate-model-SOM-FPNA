@@ -1,0 +1,32 @@
+1) Ration de compression
+
+difference coding: on remplace chaque numéro de prototype par une différence de numéro.
+
+difference coding --> entiers faibles --> entropy coding
+
+Grâce à cela on pourra voir que briser les liens modifie l'évolution des SOM.
+Bon argument pour l'application + critère quantitatif : bonne compression
+
+Avec Zip : compression (meilleure à la moins bonne) Scale-free - Small World - Kohonen
+
+2) Erreur: moyenne de différence entre pixels
+Significatif pour les grosses imagettes
+taux d'erreur entre les topologies pas important
+
+3) Deep SOM : on applique une SOM sur les headers de l'image obtenue avec une SOM
+
+en cours de test
+
+4) PSNR : Peak Signal to Noise Ratio
+On prend la moyenne des carrés des différences: ne rajoute pas de différence significative avec
+l'erreur pixel par pixel
+
+5) Paramètres avec un grand nombre d'époque l'erreur réaugmente
+
+6) Rédaction Article
+
+
+A faire : Histogramme de la sélection des prototypes
+Tester avec les contours et les points saillants
+
+Conférences visées pour la publi: ICANN (2 mai submission) et ICTAI (1er juin submission)
