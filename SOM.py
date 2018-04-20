@@ -205,3 +205,8 @@ class SOM:
             for y in range(neuron_nbr):
                 result[y*neuron_nbr + x] = self.nodes[x, y].weight
         return result * 255  # TODO : renormalise outside of SOM
+
+    def set_som_as_list(self, list):
+        for x in range(neuron_nbr):
+            for y in range(neuron_nbr):
+                self.nodes[x, y].weight = list[y*neuron_nbr + x] / 255  # TODO : normalise outside of SOM

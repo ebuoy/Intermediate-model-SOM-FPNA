@@ -59,6 +59,20 @@ class Dataset:
         n = neuron_nbr*neuron_nbr
         print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")
 
+    def save_compressed(self, som, name):
+        winners = np.zeros((neuron_nbr, neuron_nbr))
+        for i in range(len(self.data)):
+            w = som.winner(self.data[i]/255)
+            winners[w] += 1
+        file = open(output_path+name, "w")
+        # file.write(str(som.get_som_as_list()))
+        res = ""
+        for i in range(neuron_nbr):
+            for j in range(neuron_nbr):
+                res += str(winners[i, j])+" "
+        file.write(res)
+        file.close()
+
 
 def load_image_folder(path):
     files = os.listdir(path)

@@ -24,29 +24,52 @@ def vLink():
     return pix
 
 
-def display_som(som_list,adj):
+def display_som(som_list):
+    px2 = []
+    lst2 = ()
+    for y in range(neuron_nbr):
+        lst = ()
+        for x in range(neuron_nbr):
+            som_list[y * neuron_nbr + x] = som_list[y * neuron_nbr + x].reshape(pictures_dim)
+            lst = lst + (som_list[y * neuron_nbr + x],)
+        px2.append(np.concatenate(lst, axis=1))
+        lst2 += (px2[y],)
+    px = np.concatenate(lst2, axis=0)
+    px = np.array(px, 'uint8')
+
+    som_image = Image.fromarray(px)
+    #  som_image.show()
+    return som_image
+
+
+def load_som_as_image(path, som):
+    img = Dataset(path)
+    som.set_som_as_list(img.data)
+
+
+def display_som_links(som_list, adj):
     #px2 = []
     lst2 = ()
-    for i in range(neuron_nbr):
+    for y in range(neuron_nbr):
         lst = ()
-        for j in range(neuron_nbr):
-            som_list[i * neuron_nbr + j] = som_list[i * neuron_nbr + j].reshape(pictures_dim)
-            lst = lst + (som_list[i * neuron_nbr + j],)
-            if (j<neuron_nbr-1):
-                if (adj[i*neuron_nbr+j][i*neuron_nbr+j+1]==0):
+        for x in range(neuron_nbr):
+            som_list[y * neuron_nbr + x] = som_list[y * neuron_nbr + x].reshape(pictures_dim)
+            lst = lst + (som_list[y * neuron_nbr + x],)
+            if x < neuron_nbr-1:
+                if adj[y*neuron_nbr+x][y*neuron_nbr+x+1] == 0:
                     lst = lst + (noLink(),)
                 else:
                     lst = lst + (hLink(),)
         #px2.append(np.concatenate(lst, axis=1))
         lst2 += (np.concatenate(lst, axis=1),)
         lst = ()
-        if (i<neuron_nbr-1):
+        if y < neuron_nbr-1:
             for j in range(neuron_nbr):
-                if (adj[i*neuron_nbr+j][(i+1)*neuron_nbr+j]==0):
+                if adj[y*neuron_nbr+x][(y+1)*neuron_nbr+j] == 0:
                     lst = lst + (noLink(),)
                 else:
                     lst = lst + (vLink(),)
-                if (j<neuron_nbr-1):
+                if x < neuron_nbr-1:
                     lst = lst + (noLink(),)
             #px2.append(np.concatenate(lst, axis=1))
             lst2 += (np.concatenate(lst, axis=1),)
@@ -64,6 +87,13 @@ def compute_mean_error(datacomp, datamat, SOMList):
     return np.mean(error)
 
 
+def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
+    error = np.zeros(len(datacomp))
+    for i in range(len(datacomp)):
+        error[i] = np.mean((datamat[i] - SOMList[datacomp[i]])**2)
+    return 10*np.log10(255**2/np.mean(error))
+
+
 def run():
     img = Dataset("./image/Audrey.png")
     data = img.data
@@ -75,7 +105,7 @@ def run():
     epoch_time = len(data)
     nb_iter = epoch_time * epoch_nbr
 
-    carte = SOM(data, star())
+    carte = SOM(data, kohonen())
     datacomp = carte.winners()
 
     print("Initial mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
@@ -88,12 +118,35 @@ def run():
         carte.train(i, epoch_time, vect)
         if (i+1) % epoch_time == 0:
             print("Epoch : ", (i+1) // epoch_time, "/", epoch_nbr)
-            datacomp = carte.winners()
-            diff = np.count_nonzero(datacomp - old)
-            print("Changed values SOM :", diff)
-            print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
-            old = np.array(datacomp)
+            # datacomp = carte.winners()
+            # diff = np.count_nonzero(datacomp - old)
+            # print("Changed values SOM :", diff)
+            # print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+            # print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
+            # old = np.array(datacomp)
 
-    img.compression(carte, "comp.png")
-    im1 = display_som(carte.get_som_as_list(), carte.neural_adjacency_matrix)
-    im1.save(output_path+"carte.png")
+    datacomp = carte.winners()
+    diff = np.count_nonzero(datacomp - old)
+    print("Changed values SOM :", diff)
+    print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+    print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
+    old = np.array(datacomp)
+
+
+    img.compression(carte, "star_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
+    img.save_compressed(carte, "star_compressed.som")
+    if psom:
+        im1 = display_som_links(carte.get_som_as_list(), carte.neural_adjacency_matrix)
+        im1.save(output_path+"links.png")
+    im2 = display_som(carte.get_som_as_list())
+    im2.save(output_path + "star_"+str(neuron_nbr) + "n_" + str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_carte.png")
+
+
+def run_from_som():
+    img = Dataset("./image/Audrey.png")
+    data = img.data
+    carte = SOM(data, kohonen())
+    load_som_as_image("./results/deep/star_12n_3x3_500epoch_comp.png", carte)
+    img.compression(carte, "reconstruction_500epoch.png")
+    im2 = display_som(carte.get_som_as_list())
+    im2.save(output_path + "som_500epoch.png")
