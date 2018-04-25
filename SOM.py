@@ -1,4 +1,5 @@
 from Graph import *
+import os
 import copy
 
 
@@ -29,18 +30,18 @@ class Neurone:
 
 
 class SOM:
-    def __init__(self, data, connexion_matrices):
-        self.epsilon = epsilon_start
-        self.epsilon_stepping = (epsilon_end - epsilon_start) / epoch_nbr
+    def __init__(self, data, connexion_matrices, eps_s=epsilon_start, eps_e=epsilon_end, sig_s=sigma_start, sig_e=sigma_end, ep_nb=epoch_nbr):
+        self.epsilon = eps_s
+        self.epsilon_stepping = (eps_e - eps_s) / ep_nb
 
-        self.sigma = sigma_start
-        self.sigma_stepping = (sigma_end - sigma_start) / epoch_nbr
+        self.sigma = sig_s
+        self.sigma_stepping = (sig_e - sig_s) / ep_nb
         
         self.data = np.array(data)/255  # TODO : make the normalization outside of SOM
         self.vector_list = None
         data_shape = self.data.shape[1]
-        data_max = np.max(data)
-        data_min = np.min(data)
+        data_max = np.max(self.data)
+        data_min = np.min(self.data)
 
         # Initializing the neural grid
         self.nodes = np.empty((neuron_nbr, neuron_nbr), dtype=Neurone)
@@ -60,7 +61,7 @@ class SOM:
         self.compute_neurons_distance()
 
         if log_graphs:
-            self.neural_graph.print_graph()  # TODO : Setup logs
+            self.neural_graph.print_graph()
             print(self.neural_graph.to_string())
             print(self.neural_dist)
 
@@ -94,7 +95,6 @@ class SOM:
         self.neural_adjacency_matrix = self.neural_graph.get_adjacency_matrix()
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
         self.neural_dist = self.neural_dist.astype(int)  # /!\there is a numpy bug that converts inf to a negative value
-        print(self.neural_dist)
         self.distance_vector = np.empty(np.max(self.neural_dist)+1, dtype=float)
 
     @staticmethod

@@ -108,7 +108,9 @@ def run():
     carte = SOM(data, kohonen())
     datacomp = carte.winners()
 
-    print("Initial mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+    print("Initial mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+    print("Initial PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
+
     for i in range(nb_iter):
         # The training vector is chosen randomly
         if i % epoch_time == 0:
@@ -118,20 +120,17 @@ def run():
         carte.train(i, epoch_time, vect)
         if (i+1) % epoch_time == 0:
             print("Epoch : ", (i+1) // epoch_time, "/", epoch_nbr)
-            # datacomp = carte.winners()
-            # diff = np.count_nonzero(datacomp - old)
-            # print("Changed values SOM :", diff)
-            # print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
-            # print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
-            # old = np.array(datacomp)
+            if log_execution:
+                datacomp = carte.winners()
+                diff = np.count_nonzero(datacomp - old)
+                print("Changed values SOM :", diff)
+                print("Mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+                print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
+                old = np.array(datacomp)
 
     datacomp = carte.winners()
-    diff = np.count_nonzero(datacomp - old)
-    print("Changed values SOM :", diff)
-    print("Mean error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
-    print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
-    old = np.array(datacomp)
-
+    print("Final mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+    print("Initial PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
 
     img.compression(carte, "star_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
     img.save_compressed(carte, "star_compressed.som")
