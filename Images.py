@@ -3,6 +3,9 @@ from SOM import *
 from Parameters import *
 import os
 
+# Choosing the number n of neurons or the side c of the prototypes. Si is the size of the initial image, h is the height of the image, w is the width, Cr is the compression ratio.
+# n = (Si*Cr - 32*c²/(h*w))/8c²
+# c² = Si*Cr/(8n+32/(h*w))
 
 class Dataset:
     def __init__(self, path):
