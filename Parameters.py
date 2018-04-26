@@ -7,7 +7,7 @@ output_path = "./results/deep/"
 
 # SOM variables
 neuron_nbr = 8
-epoch_nbr = 10
+epoch_nbr = 70
 epsilon_start = 0.9
 epsilon_end = 0.1
 sigma_start = 0.5
@@ -18,15 +18,15 @@ psom = False
 omega = 10**(-8)
 
 # Genetic Optimisation
-range_epoch_nbr = (10, 50)
+range_epoch_nbr = (20, 100)
 range_epsilon_start = (0.1, 1)
 range_epsilon_end = (0.001, 1)
 range_sigma_start = (0.1, 1)
 range_sigma_end = (0.001, 1)
-probability_mutation = 0.1
-mutation_value = 0.1
-nb_individuals = 20
-nb_generations = 20
+probability_mutation = 0.2
+mutation_value = 0.2
+nb_individuals = 30
+nb_generations = 100
 elite_proportion = 0.4
 
 # Logs

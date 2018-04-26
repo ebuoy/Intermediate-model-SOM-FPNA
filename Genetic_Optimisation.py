@@ -30,28 +30,19 @@ class Genome:
         self.sigma_end = father.sigma_end * ratio + (1 - ratio) * mother.sigma_end
         self.fitness = 255
 
-    def mutation(self, source):
-        self.epoch_nbr = source.epoch_nbr
-        self.epsilon_start = source.epsilon_start
-        self.epsilon_end = source.epsilon_end
-        self.sigma_start = source.sigma_start
-        self.sigma_end = source.sigma_end
-        self.fitness = 255
-
+    def mutation(self):
         if probability_mutation > np.random.random():
-            self.epoch_nbr = int(mutate(source.epoch_nbr, range_epoch_nbr))
+            self.epoch_nbr = int(mutate(self.epoch_nbr, range_epoch_nbr))
         if probability_mutation > np.random.random():
-            self.epsilon_start = mutate(source.epsilon_start, range_epsilon_start)
+            self.epsilon_start = mutate(self.epsilon_start, range_epsilon_start)
         if probability_mutation > np.random.random():
-            self.epsilon_end = mutate(source.epsilon_end, range_epsilon_end)
+            self.epsilon_end = mutate(self.epsilon_end, range_epsilon_end)
         if probability_mutation > np.random.random():
-            self.sigma_start = mutate(source.sigma_start, range_sigma_start)
+            self.sigma_start = mutate(self.sigma_start, range_sigma_start)
         if probability_mutation > np.random.random():
-            self.sigma_end = mutate(source.sigma_end, range_sigma_end)
+            self.sigma_end = mutate(self.sigma_end, range_sigma_end)
 
     def run_fitness(self, data):
-        print("Running "+str(self.epoch_nbr)+" epoch !")
-        print(str(os.getpid()))
         epoch_time = len(data)
         nb_iter = epoch_time * self.epoch_nbr
         som = SOM(data, kohonen(), self.epsilon_start, self.epsilon_end, self.sigma_start, self.sigma_end, self.epoch_nbr)
@@ -62,6 +53,15 @@ class Genome:
             som.train(i, epoch_time, vector)
         data_comp = som.winners()
         self.fitness = compute_mean_error(data_comp, data, som.get_som_as_list())
+        return self
+
+    def to_string(self):
+        res = ""
+        res += "Fitness :"+str(self.fitness)
+        res += "in  "+ str(self.epoch_nbr)+" epochs"
+        res += "(eps_s: " + str(self.epsilon_start) + " eps_e: " + str(self.epsilon_end) \
+               + " sig_s: " + str(self.sigma_start) + " sig_e: " + str(self.sigma_end) + ")"
+        return res
 
     def __lt__(self, other):
         return self.fitness < other.fitness
@@ -86,17 +86,14 @@ class Population:
 
     def evaluate_all(self):
         pool = mp.Pool(nb_individuals)
-        pool.starmap(Genome.run_fitness, zip(self.current, itertools.repeat(self.data)))
+        self.current = pool.starmap(Genome.run_fitness, zip(self.current, itertools.repeat(self.data)))
         pool.close()
         pool.join()
 
     def select(self):
         self.current.sort()
         for j in self.current:
-            print(j.fitness)
-        best = self.current[0]
-        print("Best error : "+str(best.fitness)+" in "+str(best.epoch_nbr)+" epochs")
-        print("(eps_s: "+str(best.epsilon_start)+" eps_e"+str(best.epsilon_end)+" sig_s: "+str(best.sigma_start)+" sig_e"+str(best.sigma_end)+")")
+            print(j.to_string())
         new = []
         for i in range(nb_individuals):
             if i <= elite_proportion*nb_individuals:
@@ -106,3 +103,4 @@ class Population:
                 child.crossover(self.current[np.random.randint(0, nb_individuals)], self.current[np.random.randint(0, nb_individuals)])
                 child.mutation(child)
                 new.append(child)
+        self.current = new
