@@ -58,7 +58,7 @@ class Genome:
     def to_string(self):
         res = ""
         res += "Fitness :"+str(self.fitness)
-        res += "in  "+ str(self.epoch_nbr)+" epochs"
+        res += " in " + str(self.epoch_nbr)+" epochs"
         res += "(eps_s: " + str(self.epsilon_start) + " eps_e: " + str(self.epsilon_end) \
                + " sig_s: " + str(self.sigma_start) + " sig_e: " + str(self.sigma_end) + ")"
         return res
@@ -101,6 +101,6 @@ class Population:
             else:
                 child = Genome()
                 child.crossover(self.current[np.random.randint(0, nb_individuals)], self.current[np.random.randint(0, nb_individuals)])
-                child.mutation(child)
+                child.mutation()
                 new.append(child)
         self.current = new

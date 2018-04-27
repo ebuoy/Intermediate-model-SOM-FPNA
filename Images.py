@@ -76,6 +76,37 @@ class Dataset:
         file.write(res)
         file.close()
 
+    def differential_coding(self, winners, width):
+        diff = np.zeros(winners, dtype=int)
+        # The first two lines are only using the previous element to differentiate
+        diff[0] = winners[0]
+        diff[2*width-1] = winners[width-1] - winners[2*width-1]
+        for i in range(width-1):
+            diff[i+1] = winners[i]-winners[i+1]
+            diff[2*width-i-2] = winners[2*width-i-1] - winners[2*width-i-2]
+        # Difference with the minimum gradient of 4 directions
+        for i in range(2, len(winners)/width):
+            for j in range(width):
+                left = np.inf
+                top_left = np.inf
+                top = np.abs(winners[(i-2)*width+j] - winners[(i-2)*width+j])
+                top_right = np.inf
+                if j > 1:
+                    left = np.abs(winners[i*width+j-2] - winners[i*width+j-1])
+                    top_left = np.abs(winners[(i-2)*width+j-2] - winners[(i-1)*width+j-1])
+                if j < width-2:
+                    top_right = np.abs(winners[(i-2)*width+j+2] - winners[(i-1)*width+j+1])
+                min = np.min((left, top_left, top, top_right))
+                if min == left:
+                    diff[i*width+j] = winners[i*width+j-1] - winners[i*width+j]
+                elif min == top_left:
+                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+                elif min == top:
+                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+                elif min == top_right:
+                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+        return diff
+
 
 def load_image_folder(path):
     files = os.listdir(path)
