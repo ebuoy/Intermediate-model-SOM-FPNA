@@ -1,6 +1,7 @@
 from PIL import Image
 from SOM import *
 from Parameters import *
+from dahuffman import HuffmanCodec
 import os
 
 # Choosing the number n of neurons or the side c of the prototypes. Si is the size of the initial image, h is the height of the image, w is the width, Cr is the compression ratio.
@@ -71,13 +72,18 @@ class Dataset:
         file = open(output_path+name, "w")
         # file.write(str(som.get_som_as_list()))
         res = ""
-        print(winners)
+        str_win = ""
         diff = self.differential_coding(winners.flatten(), self.nb_pictures[1])
-        print(self.reverse_differential_coding(diff, self.nb_pictures[1]))
         for i in range(len(self.data)):
             res += str(diff[i])+" "
+            str_win += str(winners[i])+" "
         file.write(res)
         file.close()
+
+        codeNormal = HuffmanCodec.from_data(str_win).encode(str_win)
+        codeDiff = HuffmanCodec.from_data(res).encode(res)
+        print("Taux de compression du codage différentiel :", len(codeNormal)/len(codeDiff))
+
 
     def differential_coding(self, winners, width):
         diff = np.zeros(len(winners), dtype=int)
