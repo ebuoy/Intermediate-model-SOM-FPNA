@@ -37,7 +37,7 @@ class SOM:
         self.sigma = sig_s
         self.sigma_stepping = (sig_e - sig_s) / ep_nb
         
-        self.data = np.array(data)/255  # TODO : make the normalization outside of SOM
+        self.data = np.array(data)
         self.vector_list = None
         data_shape = self.data.shape[1]
         data_max = np.max(self.data)
@@ -197,16 +197,16 @@ class SOM:
         for x in range(neuron_nbr):
             for y in range(neuron_nbr):
                 result[x, y] = self.nodes[x, y].weight
-        return result * 255  # TODO : renormalise outside of SOM
+        return result
     
     def get_som_as_list(self):
         result = np.empty(neuron_nbr*neuron_nbr, dtype=np.ndarray)
         for x in range(neuron_nbr):
             for y in range(neuron_nbr):
                 result[y*neuron_nbr + x] = self.nodes[x, y].weight
-        return result * 255  # TODO : renormalise outside of SOM
+        return result
 
     def set_som_as_list(self, list):
         for x in range(neuron_nbr):
             for y in range(neuron_nbr):
-                self.nodes[x, y].weight = list[y*neuron_nbr + x] / 255  # TODO : normalise outside of SOM
+                self.nodes[x, y].weight = list[y*neuron_nbr + x]

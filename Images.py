@@ -29,6 +29,7 @@ class Dataset:
             j = np.hsplit(i, self.nb_pictures[1])
             for picture in j:
                 self.data.append(picture.flatten())
+        self.data = np.array(self.data)/255
 
         print("\n" + path)
         print("Pictures number :", self.nb_pictures)
@@ -40,7 +41,7 @@ class Dataset:
         pixels = []
         winners = []
         for i in range(len(self.data)):
-            w = som.winner(self.data[i]/255)
+            w = som.winner(self.data[i])
             if w not in winners:
                 winners.append(w)
             pixels.append(som_map[w])
@@ -54,6 +55,7 @@ class Dataset:
             px2.append(np.concatenate(lst, axis=1))
             lst2 += (px2[i],)
         px = np.concatenate(lst2, axis=0)
+        px *= 255
         px = np.array(px, 'uint8')
 
         file = Image.fromarray(px)
@@ -71,18 +73,33 @@ class Dataset:
         winners = som.winners()
         file = open(output_path+name, "w")
         # file.write(str(som.get_som_as_list()))
-        res = ""
-        str_win = ""
+        # res = ""
+        # str_win = ""
         diff = self.differential_coding(winners.flatten(), self.nb_pictures[1])
-        for i in range(len(self.data)):
-            res += str(diff[i])+" "
-            str_win += str(winners[i])+" "
-        file.write(res)
+
+        # for i in range(len(self.data)):
+        #     res += str(diff[i])+" "
+        #     str_win += str(winners[i])+" "
+
+        # # Codebook compression
+        # codebook = som.get_som_as_list()
+        # str_codebook = ""
+        # for i in codebook:
+        #     for j in range(len(i)):
+        #         str_codebook += str(j)+" "
+        #     str_codebook += "\n"
+
+        codeNormal = HuffmanCodec.from_data(winners).encode(winners)
+        codeDiff = HuffmanCodec.from_data(diff).encode(diff)
+        hd = np.concatenate(som.get_som_as_list(), 0) * 255
+        hd = np.array(hd, 'uint8')
+        header = HuffmanCodec.from_data(hd).encode(hd)
+        file.write(str(header))
+        file.write(str(codeDiff))
         file.close()
 
-        codeNormal = HuffmanCodec.from_data(str_win).encode(str_win)
-        codeDiff = HuffmanCodec.from_data(res).encode(res)
         print("Taux de compression du codage différentiel :", len(codeNormal)/len(codeDiff))
+        print("Taux de compression total :", len(self.data)*len(self.data[0])/(len(header)+len(codeDiff)))
 
 
     def differential_coding(self, winners, width):
