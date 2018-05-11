@@ -52,14 +52,3 @@ def star():
         for x in range(neuron_nbr):
             connexion_matrix[x, y] = pattern[y % 3][x % 3]
     return connexion_matrix
-
-
-def random():  # TODO : implement
-    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
-    pattern = [[star_corner_left, star_top, star_corner_right],
-               [star_left, kohonen_matrix, star_right],
-               [star_corner_left, star_bottom, star_corner_right]]
-    for y in range(neuron_nbr):
-        for x in range(neuron_nbr):
-            connexion_matrix[x, y] = pattern[y % 3][x % 3]
-    return connexion_matrix

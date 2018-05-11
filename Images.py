@@ -1,6 +1,7 @@
 from PIL import Image
 from SOM import *
 from Parameters import *
+from dahuffman import HuffmanCodec
 import os
 
 # Choosing the number n of neurons or the side c of the prototypes. Si is the size of the initial image, h is the height of the image, w is the width, Cr is the compression ratio.
@@ -28,6 +29,7 @@ class Dataset:
             j = np.hsplit(i, self.nb_pictures[1])
             for picture in j:
                 self.data.append(picture.flatten())
+        self.data = np.array(self.data)/255
 
         print("\n" + path)
         print("Pictures number :", self.nb_pictures)
@@ -39,7 +41,7 @@ class Dataset:
         pixels = []
         winners = []
         for i in range(len(self.data)):
-            w = som.winner(self.data[i]/255)
+            w = som.winner(self.data[i])
             if w not in winners:
                 winners.append(w)
             pixels.append(som_map[w])
@@ -53,6 +55,7 @@ class Dataset:
             px2.append(np.concatenate(lst, axis=1))
             lst2 += (px2[i],)
         px = np.concatenate(lst2, axis=0)
+        px *= 255
         px = np.array(px, 'uint8')
 
         file = Image.fromarray(px)
@@ -63,29 +66,52 @@ class Dataset:
         print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")
 
     def save_compressed(self, som, name):
-        winners = np.zeros((neuron_nbr, neuron_nbr))
-        for i in range(len(self.data)):
-            w = som.winner(self.data[i]/255)
-            winners[w] += 1
+        # winners = np.zeros((neuron_nbr, neuron_nbr))
+        # for i in range(len(self.data)):
+        #     w = som.winner(self.data[i]/255)
+        #     winners[w] += 1
+        winners = som.winners()
         file = open(output_path+name, "w")
         # file.write(str(som.get_som_as_list()))
-        res = ""
-        for i in range(neuron_nbr):
-            for j in range(neuron_nbr):
-                res += str(winners[i, j])+" "
-        file.write(res)
+        # res = ""
+        # str_win = ""
+        diff = self.differential_coding(winners.flatten(), self.nb_pictures[1])
+
+        # for i in range(len(self.data)):
+        #     res += str(diff[i])+" "
+        #     str_win += str(winners[i])+" "
+
+        # # Codebook compression
+        # codebook = som.get_som_as_list()
+        # str_codebook = ""
+        # for i in codebook:
+        #     for j in range(len(i)):
+        #         str_codebook += str(j)+" "
+        #     str_codebook += "\n"
+
+        codeNormal = HuffmanCodec.from_data(winners).encode(winners)
+        codeDiff = HuffmanCodec.from_data(diff).encode(diff)
+        hd = np.concatenate(som.get_som_as_list(), 0) * 255
+        hd = np.array(hd, 'uint8')
+        header = HuffmanCodec.from_data(hd).encode(hd)
+        file.write(str(header))
+        file.write(str(codeDiff))
         file.close()
 
+        print("Taux de compression du codage différentiel :", len(codeNormal)/len(codeDiff))
+        print("Taux de compression total :", len(self.data)*len(self.data[0])/(len(header)+len(codeDiff)))
+
+
     def differential_coding(self, winners, width):
-        diff = np.zeros(winners, dtype=int)
+        diff = np.zeros(len(winners), dtype=int)
         # The first two lines are only using the previous element to differentiate
         diff[0] = winners[0]
-        diff[2*width-1] = winners[width-1] - winners[2*width-1]
+        diff[2*width-1] = winners[2*width-1] - winners[width-1]
         for i in range(width-1):
-            diff[i+1] = winners[i]-winners[i+1]
-            diff[2*width-i-2] = winners[2*width-i-1] - winners[2*width-i-2]
+            diff[i+1] = winners[i+1] - winners[i]
+            diff[2*width-i-2] = winners[2*width-i-2] - winners[2*width-i-1]
         # Difference with the minimum gradient of 4 directions
-        for i in range(2, len(winners)/width):
+        for i in range(2, int(len(winners)/width)):
             for j in range(width):
                 left = np.inf
                 top_left = np.inf
@@ -98,14 +124,46 @@ class Dataset:
                     top_right = np.abs(winners[(i-2)*width+j+2] - winners[(i-1)*width+j+1])
                 min = np.min((left, top_left, top, top_right))
                 if min == left:
-                    diff[i*width+j] = winners[i*width+j-1] - winners[i*width+j]
+                    diff[i*width+j] = winners[i*width+j] - winners[i*width+j-1]
                 elif min == top_left:
-                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+                    diff[i*width+j] = winners[i*width+j] - winners[(i-2)*width+j]
                 elif min == top:
-                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+                    diff[i*width+j] = winners[i*width+j] - winners[(i-2)*width+j]
                 elif min == top_right:
-                    diff[i*width+j] = winners[(i-2)*width+j] - winners[i*width+j]
+                    diff[i*width+j] = winners[i*width+j] - winners[(i-2)*width+j]
         return diff
+
+    def reverse_differential_coding(self, diff, width):
+        winners = np.zeros(len(diff), dtype=int)
+        # The first two lines are only using the previous element to differentiate
+        winners[0] = diff[0]
+        for i in range(width-1):
+            winners[i+1] = winners[i] + diff[i+1]
+        winners[2*width-1] = winners[width-1] + diff[2*width-1]
+        for i in range(width-1):
+            winners[2*width-i-2] = winners[2*width-i-1] + diff[2*width-i-2]
+        # Difference with the minimum gradient of 4 directions
+        for i in range(2, int(len(diff)/width)):
+            for j in range(width):
+                left = np.inf
+                top_left = np.inf
+                top = np.abs(winners[(i-2)*width+j] - winners[(i-2)*width+j])
+                top_right = np.inf
+                if j > 1:
+                    left = np.abs(winners[i*width+j-2] - winners[i*width+j-1])
+                    top_left = np.abs(winners[(i-2)*width+j-2] - winners[(i-1)*width+j-1])
+                if j < width-2:
+                    top_right = np.abs(winners[(i-2)*width+j+2] - winners[(i-1)*width+j+1])
+                min = np.min((left, top_left, top, top_right))
+                if min == left:
+                    winners[i*width+j] = winners[i*width+j-1] + diff[i*width+j]
+                elif min == top_left:
+                    winners[i*width+j] = winners[(i-2)*width+j] + diff[i*width+j]
+                elif min == top:
+                    winners[i*width+j] = winners[(i-2)*width+j] + diff[i*width+j]
+                elif min == top_right:
+                    winners[i*width+j] = winners[(i-2)*width+j] + diff[i*width+j]
+        return winners
 
 
 def load_image_folder(path):

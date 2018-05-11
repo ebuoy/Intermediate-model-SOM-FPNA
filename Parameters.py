@@ -7,11 +7,11 @@ output_path = "./results/genetic optimisation/"
 
 # SOM variables
 neuron_nbr = 8
-epoch_nbr = 42
-epsilon_start = 0.59
-epsilon_end = 0.018
-sigma_start = 0.36
-sigma_end = 0.0017
+epoch_nbr = 40
+epsilon_start = 0.9
+epsilon_end = 0.1
+sigma_start = 0.5
+sigma_end = 0.025
 
 # PSOM variant
 psom = False
@@ -23,10 +23,14 @@ range_epsilon_start = (0.1, 1)
 range_epsilon_end = (0.001, 1)
 range_sigma_start = (0.1, 1)
 range_sigma_end = (0.001, 1)
+
+probability_neural_link = 0.5
+probability_link = 0.2
+
 probability_mutation = 0.2
 mutation_value = 0.2
-nb_individuals = 30
-nb_generations = 100
+nb_individuals = 4
+nb_generations = 2
 elite_proportion = 0.4
 
 # Logs

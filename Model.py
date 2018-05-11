@@ -82,6 +82,7 @@ def display_som_links(som_list, adj):
 
 def compute_mean_error(datacomp, datamat, SOMList):
     error = np.zeros(len(datacomp))
+    SOMList *= 255
     for i in range(len(datacomp)):
         error[i] = np.mean(np.abs(datamat[i] - SOMList[datacomp[i]]))
     return np.mean(error)
@@ -89,6 +90,7 @@ def compute_mean_error(datacomp, datamat, SOMList):
 
 def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
     error = np.zeros(len(datacomp))
+    SOMList *= 255
     for i in range(len(datacomp)):
         error[i] = np.mean((datamat[i] - SOMList[datacomp[i]])**2)
     return 10*np.log10(255**2/np.mean(error))
