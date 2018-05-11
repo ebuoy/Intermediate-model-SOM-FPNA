@@ -70,6 +70,69 @@ class Genome:
         return self.fitness == other.fitness
 
 
+class ConnexionGenome:
+    def __init__(self):
+        self.connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
+                matrix = np.zeros((5, 5), dtype=int)
+                for i in range(5):
+                    for j in range(5):
+                        if i == j:
+                            matrix[i, j] = 0
+                        elif i == 4 or j == 4:
+                            matrix[i, j] = 1 if np.random.random() < probability_neural_link else 0
+                        else:
+                            matrix[i, j] = 1 if np.random.random() < probability_link else 0
+                self.connexion_matrix[x, y] = matrix
+        self.fitness = 255
+
+    def crossover(self, father, mother):
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
+                if np.random.random() < 0.5:
+                    self.connexion_matrix[x, y] = father.connexion_matrix[x, y]
+                else:
+                    self.connexion_matrix[x, y] = mother.connexion_matrix[x, y]
+        self.fitness = 255
+
+    def mutation(self):
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
+                if np.random.random() < probability_mutation:
+                    matrix = np.zeros((5, 5), dtype=int)
+                    for i in range(5):
+                        for j in range(5):
+                            if i != j:
+                                matrix[i, j] = matrix[i, j] if np.random.random() < probability_mutation else 1-matrix[i, j]
+                    self.connexion_matrix[x, y] = matrix
+        self.fitness = 255
+
+    def run_fitness(self, data):
+        epoch_time = len(data)
+        nb_iter = epoch_time * epoch_nbr
+        som = SOM(data, self.connexion_matrix)
+        for i in range(nb_iter):
+            if i % epoch_time == 0:
+                som.generate_random_list()
+            vector = som.unique_random_vector()
+            som.train(i, epoch_time, vector)
+        data_comp = som.winners()
+        self.fitness = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
+        return self
+
+    def to_string(self):
+        res = ""
+        res += "Fitness :"+str(self.fitness)
+        return res
+
+    def __lt__(self, other):
+        return self.fitness > other.fitness
+
+    def __eq__(self, other):
+        return self.fitness == other.fitness
+
+
 class Population:
     def __init__(self):
         img = Dataset("./image/Audrey.png")
@@ -83,6 +146,8 @@ class Population:
             print("Generation "+str(i)+"/"+str(nb_generations))
             self.evaluate_all()
             self.select()
+        print(self.current[0].to_string())
+        print(self.current[0].connexion_matrix)
 
     def evaluate_all(self):
         pool = mp.Pool(nb_individuals)
