@@ -3,15 +3,15 @@ np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
 pictures_dim = (4, 4)
-output_path = "./results/deep/"
+output_path = "./results/genetic optimisation/"
 
 # SOM variables
 neuron_nbr = 8
-epoch_nbr = 70
-epsilon_start = 0.9
-epsilon_end = 0.1
-sigma_start = 0.5
-sigma_end = 0.025
+epoch_nbr = 42
+epsilon_start = 0.59
+epsilon_end = 0.018
+sigma_start = 0.36
+sigma_end = 0.0017
 
 # PSOM variant
 psom = False

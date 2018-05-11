@@ -23,7 +23,7 @@ class Genome:
 
     def crossover(self, father, mother):
         ratio = np.random.random()
-        self.epoch_nbr = int(father.epoch_nbr * ratio + (1 - ratio) * mother.epoch_nbr)
+        self.epoch_nbr = int(np.round(father.epoch_nbr * ratio + (1 - ratio) * mother.epoch_nbr))
         self.epsilon_start = father.epsilon_start * ratio + (1 - ratio) * mother.epsilon_start
         self.epsilon_end = father.epsilon_end * ratio + (1 - ratio) * mother.epsilon_end
         self.sigma_start = father.sigma_start * ratio + (1 - ratio) * mother.sigma_start
@@ -52,7 +52,7 @@ class Genome:
             vector = som.unique_random_vector()
             som.train(i, epoch_time, vector)
         data_comp = som.winners()
-        self.fitness = compute_mean_error(data_comp, data, som.get_som_as_list())
+        self.fitness = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
         return self
 
     def to_string(self):
@@ -91,7 +91,7 @@ class Population:
         pool.join()
 
     def select(self):
-        self.current.sort()
+        self.current.sort(reverse=True)
         for j in self.current:
             print(j.to_string())
         new = []
