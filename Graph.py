@@ -1,9 +1,12 @@
 from Parameters import *
 import numpy as np
 import copy
+from heapq import *
+from functools import *
 from scipy.sparse.csgraph import floyd_warshall
 
 
+@total_ordering
 class Edge:
     def __init__(self, in_vertex, out_vertex, weight):
         self.in_vertex = in_vertex
@@ -12,6 +15,21 @@ class Edge:
 
     def to_string(self):
         return self.in_vertex+"--"+str(self.weight)+"-->"+self.out_vertex
+
+    def __eq__(self, other):
+        return self.weight == other.weight
+
+    def __lt__(self, other):
+        return self.weight < other.weight
+
+    def __le__(self, other):
+        return self.weight <= other.weight
+
+    def __gt__(self, other):
+        return self.weight > other.weight
+
+    def __ge__(self, other):
+        return self.weight >= other.weight
 
 
 class Graph:
@@ -28,6 +46,10 @@ class Graph:
         if edge.out_vertex not in self.vertex_list:
             self.vertex_list[edge.out_vertex] = len(self.vertex_list)
         self.edges_list.append(edge)
+
+    def add_vertex(self, vertex):
+        if vertex not in self.vertex_list:
+            self.vertex_list[vertex] = len(self.vertex_list)
 
     def remove_edge(self, vertex_in, vertex_out):
         for e in self.edges_list:
@@ -62,23 +84,31 @@ class Graph:
         finished = []
         for e in self.edges_list:
             if e.in_vertex[0] == 'n':
-                new_edges_list.append(e)
+                heappush(new_edges_list, e)
             else:
                 link_edges_list.append(e)
         hash_map = [[] for i in range(len(self.vertex_list))]
+        history = self.get_adjacency_matrix()
         for e in link_edges_list:
             hash_map[self.vertex_list[e.in_vertex]].append(e)
         while new_edges_list:
-            current = new_edges_list.pop()
-            for i in hash_map[self.vertex_list[current.out_vertex]]:
-                new = Edge(current.in_vertex, i.out_vertex, current.weight+i.weight)
-                if new.out_vertex[0] == 'n':
-                    finished.append(new)
-                else:
-                    new_edges_list.append(new)
+            current = heappop(new_edges_list)
+            for e in hash_map[self.vertex_list[current.out_vertex]]:
+                w = current.weight + e.weight
+                if w < history[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]]:
+                    history[self.vertex_list[current.in_vertex], self.vertex_list[e.out_vertex]] = w
+                    new = Edge(current.in_vertex, e.out_vertex, w)
+                    if new.out_vertex[0] == 'n':
+                        finished.append(new)
+                    else:
+                        heappush(new_edges_list, new)
         g = Graph()
         for e in finished:
             g.add_edge(e)
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
+                g.add_vertex("n"+str(x)+','+str(y))
+
         g.set_neuron_id()
         return g
 

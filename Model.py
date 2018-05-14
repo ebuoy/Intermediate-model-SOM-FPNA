@@ -82,18 +82,16 @@ def display_som_links(som_list, adj):
 
 def compute_mean_error(datacomp, datamat, SOMList):
     error = np.zeros(len(datacomp))
-    SOMList *= 255
     for i in range(len(datacomp)):
-        error[i] = np.mean(np.abs(datamat[i] - SOMList[datacomp[i]]))
+        error[i] = np.mean(np.abs(datamat[i] - SOMList[datacomp[i]]))*255
     return np.mean(error)
 
 
 def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
     error = np.zeros(len(datacomp))
-    SOMList *= 255
     for i in range(len(datacomp)):
         error[i] = np.mean((datamat[i] - SOMList[datacomp[i]])**2)
-    return 10*np.log10(255**2/np.mean(error))
+    return 10*np.log10(1/np.mean(error))
 
 
 def run():
@@ -134,13 +132,13 @@ def run():
     print("Final mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
     print("Initial PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
 
-    img.compression(carte, "star_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
-    img.save_compressed(carte, "star_compressed.som")
+    img.compression(carte, "koh_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
+    img.save_compressed(carte, "koh_compressed.som")
     if psom:
         im1 = display_som_links(carte.get_som_as_list(), carte.neural_adjacency_matrix)
         im1.save(output_path+"links.png")
     im2 = display_som(carte.get_som_as_list())
-    im2.save(output_path + "star_"+str(neuron_nbr) + "n_" + str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_carte.png")
+    im2.save(output_path + "koh_"+str(neuron_nbr) + "n_" + str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_carte.png")
 
 
 def run_from_som():
