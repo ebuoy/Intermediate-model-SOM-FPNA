@@ -85,7 +85,7 @@ class ConnexionGenome:
                         else:
                             matrix[i, j] = 1 if np.random.random() < probability_link else 0
                 self.connexion_matrix[x, y] = matrix
-        self.connexion_matrix = star()
+        self.connexion_matrix = kohonen()
         self.fitness = 255
 
     def crossover(self, father, mother):
@@ -118,8 +118,6 @@ class ConnexionGenome:
         for i in range(nb_iter):
             if i % epoch_time == 0:
                 som.generate_random_list()
-                data_comp = som.winners()
-                print("fit:" + str(peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())))
             vector = som.unique_random_vector()
             som.train(i, epoch_time, vector)
         data_comp = som.winners()

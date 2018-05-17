@@ -52,3 +52,20 @@ def star():
         for x in range(neuron_nbr):
             connexion_matrix[x, y] = pattern[y % 3][x % 3]
     return connexion_matrix
+
+
+def random():
+    connexion_matrix = np.empty((neuron_nbr, neuron_nbr, 5, 5))
+    for y in range(neuron_nbr):
+        for x in range(neuron_nbr):
+            matrix = np.zeros((5, 5), dtype=int)
+            for i in range(5):
+                for j in range(5):
+                    if i == j:
+                        matrix[i, j] = 0
+                    elif i == 4 or j == 4:
+                        matrix[i, j] = 1 if np.random.random() < probability_neural_link else 0
+                    else:
+                        matrix[i, j] = 1 if np.random.random() < probability_link else 0
+            connexion_matrix[x, y] = matrix
+    return connexion_matrix

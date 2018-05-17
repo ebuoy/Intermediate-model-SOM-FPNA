@@ -2,12 +2,12 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
-pictures_dim = (4, 4)
-output_path = "./results/genetic optimisation/"
+pictures_dim = (10, 10)
+output_path = "./results/prez/"
 
 # SOM variables
-neuron_nbr = 8
-epoch_nbr = 40
+neuron_nbr = 21
+epoch_nbr = 200
 epsilon_start = 0.9
 epsilon_end = 0.1
 sigma_start = 0.5
@@ -27,10 +27,10 @@ range_sigma_end = (0.001, 1)
 probability_neural_link = 0.5
 probability_link = 0.2
 
-probability_mutation = 0.2
-mutation_value = 0.2
-nb_individuals = 4
-nb_generations = 2
+probability_mutation = 0.1
+mutation_value = 0.1
+nb_individuals = 20
+nb_generations = 50
 elite_proportion = 0.4
 
 # Logs

@@ -101,7 +101,6 @@ class Dataset:
         print("Taux de compression du codage différentiel :", len(codeNormal)/len(codeDiff))
         print("Taux de compression total :", len(self.data)*len(self.data[0])/(len(header)+len(codeDiff)))
 
-
     def differential_coding(self, winners, width):
         diff = np.zeros(len(winners), dtype=int)
         # The first two lines are only using the previous element to differentiate
