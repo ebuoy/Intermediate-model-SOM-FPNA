@@ -75,7 +75,7 @@ class Dataset:
         # file.write(str(som.get_som_as_list()))
         # res = ""
         # str_win = ""
-        diff = self.differential_coding(winners.flatten(), self.nb_pictures[1])
+        diff = Dataset.differential_coding(winners.flatten(), self.nb_pictures[1])
 
         # for i in range(len(self.data)):
         #     res += str(diff[i])+" "
@@ -101,7 +101,18 @@ class Dataset:
         print("Taux de compression du codage différentiel :", len(codeNormal)/len(codeDiff))
         print("Taux de compression total :", len(self.data)*len(self.data[0])/(len(header)+len(codeDiff)))
 
-    def differential_coding(self, winners, width):
+    @staticmethod
+    def compute_compression_ratio(data, som, winners, width):
+        diff = Dataset.differential_coding(winners.flatten(), width)
+        codeNormal = HuffmanCodec.from_data(winners).encode(winners)
+        codeDiff = HuffmanCodec.from_data(diff).encode(diff)
+        hd = np.concatenate(som.get_som_as_list(), 0) * 255
+        hd = np.array(hd, 'uint8')
+        header = HuffmanCodec.from_data(hd).encode(hd)
+        return len(codeNormal)/len(codeDiff), len(data)*len(data[0])/(len(header)+len(codeDiff))
+
+    @staticmethod
+    def differential_coding(winners, width):
         diff = np.zeros(len(winners), dtype=int)
         # The first two lines are only using the previous element to differentiate
         diff[0] = winners[0]
