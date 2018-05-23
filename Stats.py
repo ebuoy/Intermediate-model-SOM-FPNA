@@ -89,11 +89,11 @@ class FullTest:
             images[f] = Dataset(input_path + f)
             database[f] = images[f].data
         self.current = []
-        connex = ("koh", "sw", "star")
+        connex = ("koh",)  # "koh", "sw", "star"
         for i in connex:
             for j in images:
-                for k in range(10):
-                    for l in range(10):
+                for k in range(7):
+                    for l in range(7):
                         self.current.append(StatsRun(i, j, k, l))
 
     def run(self):

@@ -3,8 +3,8 @@ np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
 pictures_dim = (4, 4)
-output_path = "./results/test/"
-input_path = "./image/test/"
+output_path = "./results/limited_test/"
+input_path = "./image/limited_test/"
 
 # SOM variables
 neuron_nbr = 9
