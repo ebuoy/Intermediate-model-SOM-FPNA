@@ -3,11 +3,11 @@ np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
 pictures_dim = (4, 4)
-output_path = "./results/limited_test/"
+output_path = "./results/final_test/"
 input_path = "./image/limited_test/"
 
 # SOM variables
-neuron_nbr = 9
+neuron_nbr = 6
 epoch_nbr = 50
 epsilon_start = 0.6
 epsilon_end = 0.05

@@ -89,7 +89,7 @@ class FullTest:
             images[f] = Dataset(input_path + f)
             database[f] = images[f].data
         self.current = []
-        connex = ("koh",)  # "koh", "sw", "star"
+        connex = ("koh", "sw", "star")
         for i in connex:
             for j in images:
                 for k in range(7):
