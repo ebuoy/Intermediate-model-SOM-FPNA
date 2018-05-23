@@ -97,7 +97,7 @@ def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
 
 def run():
     np.random.seed(1024)
-    img = Dataset("./image/Audrey.png")
+    img = Dataset("./image/test/woman.pgm")
     data = img.data
     # data = load_image_folder("./image/")
 

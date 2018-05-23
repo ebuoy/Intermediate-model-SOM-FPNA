@@ -2,16 +2,17 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
-pictures_dim = (10, 10)
-output_path = "./results/parameters_check/"
+pictures_dim = (4, 4)
+output_path = "./results/test/"
+input_path = "./image/test/"
 
 # SOM variables
-neuron_nbr = 15
+neuron_nbr = 9
 epoch_nbr = 50
-epsilon_start = 0.9
-epsilon_end = 0.1
+epsilon_start = 0.6
+epsilon_end = 0.05
 sigma_start = 0.5
-sigma_end = 0.025
+sigma_end = 0.001
 
 # PSOM variant
 psom = False

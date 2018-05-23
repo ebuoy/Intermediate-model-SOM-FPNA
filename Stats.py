@@ -3,6 +3,8 @@ import itertools
 import multiprocessing as mp
 
 connexions_matrices = {"koh": kohonen(), "sw": small_worlds(), "star": star()}
+images = {}
+database = {}
 
 class Run:
     def __init__(self, eS, eE, sS, sE, connexion):
@@ -30,7 +32,7 @@ class Run:
         data_comp = som.winners()
         self.mean = compute_mean_error(data_comp, data, som.get_som_as_list())
         self.psnr = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
-        self.diff, self.comp = Dataset.compute_compression_ratio(data, som, width, data_comp)
+        self.diff, self.comp = Dataset.compute_compression_ratio(data, som, data_comp, width)
         print(self.to_string())
 
     def to_string(self):
@@ -38,29 +40,64 @@ class Run:
         res += str(self.epsilon_start)+";"+str(self.epsilon_end)+";"
         res += str(self.sigma_start)+";"+str(self.sigma_end)+";"
         res += str(self.mean)+";"+str(self.psnr)+";"
-        res += str(self.diff)+";"+str(self.comp)+"\n"
+        res += str(self.diff)+";"+str(self.comp)
+        return res
+
+
+class StatsRun:
+    def __init__(self, connexion, img, seed_one, seed_two):
+        self.conn = connexion
+        self.epoch_nbr = epoch_nbr
+        self.seed_one = seed_one
+        self.seed_two = seed_two
+        self.img = img
+        self.mean = -1
+        self.psnr = -1
+        self.diff = -1
+        self.comp = -1
+
+    def run_fitness(self):
+        data = database[self.img]
+        epoch_time = len(data)
+        nb_iter = epoch_time * self.epoch_nbr
+        np.random.seed(self.seed_one)
+        som = SOM(data, connexions_matrices[self.conn])
+        np.random.seed(self.seed_two)
+        for i in range(nb_iter):
+            if i % epoch_time == 0:
+                som.generate_random_list()
+            vector = som.unique_random_vector()
+            som.train(i, epoch_time, vector)
+        data_comp = som.winners()
+        self.mean = compute_mean_error(data_comp, data, som.get_som_as_list())
+        self.psnr = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
+        self.diff, self.comp = Dataset.compute_compression_ratio(data, som, data_comp, images[self.img].nb_pictures[1])
+        print(self.to_string())
+
+    def to_string(self):
+        res = self.conn+";"+self.img+";"
+        res += str(pictures_dim[0])+";"+str(neuron_nbr)+";"
+        res += str(self.mean)+";"+str(self.psnr)+";"
+        res += str(self.diff)+";"+str(self.comp)
         return res
 
 
 class FullTest:
     def __init__(self):
-        self.img = Dataset("./image/Audrey.png")
-        self.data = self.img.data
+        self.img_str = os.listdir(input_path)
+        for f in self.img_str:
+            images[f] = Dataset(input_path + f)
+            database[f] = images[f].data
         self.current = []
         connex = ("koh", "sw", "star")
-        eS = (1, 0.3)
-        eE = (0.1, 0.01)
-        sS = (0.6, 0.1)
-        sE = (0.01, 0.001)
-        for i in eS:
-            for j in eE:
-                for k in sS:
-                    for l in sE:
-                        for m in connex:
-                            self.current.append(Run(i, j, k, l, m))
+        for i in connex:
+            for j in images:
+                for k in range(10):
+                    for l in range(10):
+                        self.current.append(StatsRun(i, j, k, l))
 
     def run(self):
-        pool = mp.Pool(len(self.current))
-        self.current = pool.starmap(Run.run_fitness, zip(self.current, itertools.repeat(self.data), itertools.repeat(self.img.nb_pictures[1])))
+        pool = mp.Pool(8)
+        self.current = pool.starmap(StatsRun.run_fitness, zip(self.current))
         pool.close()
         pool.join()
