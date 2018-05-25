@@ -101,3 +101,6 @@ class FullTest:
         self.current = pool.starmap(StatsRun.run_fitness, zip(self.current))
         pool.close()
         pool.join()
+
+a = FullTest()
+a.run()
