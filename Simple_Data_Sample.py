@@ -109,3 +109,38 @@ def circle(n):
     
     data=np.array(data)
     return data
+
+
+def sierpinski_carpet(number, level=4):
+    data = np.array([np.random.random(2) for i in range(number)])
+    for i in range(number):
+        correct = False
+        while not correct:
+            j = 0
+            data[i] = np.random.random(2)
+            x = data[i][0]
+            y = data[i][1]
+            while j < level and not correct:
+                j += 1
+                if 1/3 < x < 2/3 and 1/3 < y < 2/3:
+                    correct = True
+                else:
+                    x = (x % (1/3)) * 3
+                    y = (y % (1/3)) * 3
+    return data
+
+
+# def complicated_sierpinski_carpet(number, level=3):
+#     data = np.array([np.random.random(2) for i in range(number)])
+#     area = np.zeros(level)
+#     for i in range(level):
+#         area[i] = 8**i/9**(i+1)
+#     area = np.divide(area,sum(area))
+#     for i in range(number):
+#         j = 0
+#         position = np.random.random()
+#         data[i] = np.divide(data[i], 3)+1/3
+#         while position > area[j]:
+#             position -= area[j]
+#             j += 1
+#     return data

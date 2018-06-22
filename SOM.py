@@ -19,7 +19,6 @@ def gauss(d, sig):
 def normalized_gaussian(d, sig):
     return np.exp(-((d / sig) ** 2) / 2)
 
-
 class Neurone:
     def __init__(self, x, y, shape, min, max, connections):
         self.x = x  # Positions in the grid
@@ -191,7 +190,21 @@ class SOM:
     def generate_random_list(self):
         self.vector_list = list(range(len(self.data)))
         np.random.shuffle(self.vector_list)
-    
+
+    def compute_mean_error(self, datacomp):
+        SOMList = self.get_som_as_list()
+        error = np.zeros(len(datacomp))
+        for i in range(len(datacomp)):
+            error[i] = np.mean(np.abs(self.data[i] - SOMList[datacomp[i]]))
+        return np.mean(error)
+
+    def peak_signal_to_noise_ratio(self, datacomp):
+        SOMList = self.get_som_as_list()
+        error = np.zeros(len(datacomp))
+        for i in range(len(datacomp)):
+            error[i] = np.mean((self.data[i] - SOMList[datacomp[i]]) ** 2)
+        return 10 * np.log10(1 / np.mean(error))
+
     def get_som_as_map(self):
         result = np.empty((neuron_nbr, neuron_nbr), dtype=np.ndarray)
         for x in range(neuron_nbr):
