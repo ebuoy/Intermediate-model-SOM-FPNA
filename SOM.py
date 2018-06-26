@@ -38,6 +38,7 @@ class SOM:
         
         self.data = np.array(data)
         self.vector_list = None
+        print(self.data.shape)
         data_shape = self.data.shape[1]
         data_max = np.max(self.data)
         data_min = np.min(self.data)
@@ -54,6 +55,7 @@ class SOM:
         self.neural_adjacency_matrix = None
         self.neural_dist = None
         self.distance_vector = None
+        self.refresh_distance_vector = True
 
         self.generate_global_connections_graph()
         self.neural_graph = self.global_connections_graph.extract_neurons_graph()
@@ -95,6 +97,7 @@ class SOM:
         self.neural_dist = self.neural_graph.get_all_shortest_paths()
         self.neural_dist = self.neural_dist.astype(int)  # /!\there is a numpy bug that converts inf to a negative value
         self.distance_vector = np.empty(np.max(self.neural_dist)+1, dtype=float)
+        self.refresh_distance_vector = True
 
     @staticmethod
     def uniform_weight(i, j):
@@ -137,10 +140,13 @@ class SOM:
             self.sigma += self.sigma_stepping
             if psom:
                 self.pruning_neighbors()
+            self.refresh_distance_vector = True
+        if self.refresh_distance_vector:
             for i in range(len(self.distance_vector)):
                 self.distance_vector[i] = f(i/(len(self.distance_vector)-1), self.sigma)
             if log_gaussian_vector:
                 print(self.distance_vector)
+
 
         vector = self.data[vector_coordinates]
 

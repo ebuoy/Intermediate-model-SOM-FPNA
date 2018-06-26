@@ -97,7 +97,7 @@ def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
 
 def run():
     np.random.seed(1024)
-    img = Dataset("./image/test/woman.pgm")
+    img = Dataset("./image/limited_test/einstein.pgm")
     data = img.data
     # data = load_image_folder("./image/")
 
@@ -108,10 +108,10 @@ def run():
     nb_iter = epoch_time * epoch_nbr
 
     carte = SOM(data, small_worlds())
-    datacomp = carte.winners()
+#    datacomp = carte.winners()
 
-    print("Initial mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
-    print("Initial PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
+#    print("Initial mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
+#    print("Initial PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
 
     for i in range(nb_iter):
         # The training vector is chosen randomly
@@ -131,6 +131,7 @@ def run():
                 old = np.array(datacomp)
 
     datacomp = carte.winners()
+    print(datacomp)
     print("Final mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
     print("Final PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
 

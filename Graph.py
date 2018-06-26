@@ -52,9 +52,10 @@ class Graph:
             self.vertex_list[vertex] = len(self.vertex_list)
 
     def remove_edge(self, vertex_in, vertex_out):
-        for e in self.edges_list:
-            if e.in_vertex == vertex_in and e.out_vertex == vertex_out:
-                self.edges_list.remove(e)
+        for i in range(len(self.edges_list)):
+            if self.edges_list[i].in_vertex == vertex_in and self.edges_list[i].out_vertex == vertex_out:
+                self.edges_list.pop(i)
+                break
 
     def get_adjacency_matrix(self):
         adjacency_matrix = np.full((len(self.vertex_list), len(self.vertex_list)), np.Infinity)

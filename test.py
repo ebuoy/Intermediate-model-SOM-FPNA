@@ -4,9 +4,6 @@ from tkinter import *
 from Simple_Data_Sample import *
 from Connections import *
 import time
-global neuron_nbr
-
-neuron_nbr = 12
 
 h_l = 700
 w_l = 700
@@ -32,7 +29,7 @@ def draw_SOM(n,map,can,h,w):
             
             x_l = x_n - w//200
             x_r = x_n + w//200
-            y_a = y_n - h/55
+            y_a = y_n - h//55
             y_b = y_n + h//55
             cercle(can, x_l, y_a, h//300, 'black')
             cercle(can, x_r, y_a, h//300, 'black')
@@ -58,8 +55,8 @@ def draw_map(n,data,map,can,h,w):
         y_d = data[i][1]*(h-100)+(h-100)//10
         cercle(can, x_d, y_d, h//100, 'red')
     
-    for i in range (map.n-1):
-        for j in range (map.n-1):
+    for i in range(neuron_nbr-1):
+        for j in range(neuron_nbr-1):
             #print(map.nodes[i][j].weight)
             x_ij = map.nodes[i][j].weight[0]*(w-100)+(w-100)//10
             y_ij = map.nodes[i][j].weight[1]*(h-100)+(h-100)//10
@@ -80,16 +77,16 @@ def draw_map(n,data,map,can,h,w):
             can.create_line(x_ij,y_ij,x_i1j,y_i1j,fill="blue")
             can.create_line(x_ij,y_ij,x_ij1,y_ij1,fill="blue")
 
-            x_4j = map.nodes[map.n-1][j].weight[0]*(w-100)+(w-100)//10
-            y_4j = map.nodes[map.n-1][j].weight[1]*(h-100)+(h-100)//10
-            x_4j1 = map.nodes[map.n-1][j+1].weight[0]*(w-100)+(w-100)//10
-            y_4j1 = map.nodes[map.n-1][j+1].weight[1]*(h-100)+(h-100)//10
+            x_4j = map.nodes[neuron_nbr-1][j].weight[0]*(w-100)+(w-100)//10
+            y_4j = map.nodes[neuron_nbr-1][j].weight[1]*(h-100)+(h-100)//10
+            x_4j1 = map.nodes[neuron_nbr-1][j+1].weight[0]*(w-100)+(w-100)//10
+            y_4j1 = map.nodes[neuron_nbr-1][j+1].weight[1]*(h-100)+(h-100)//10
             can.create_line(x_4j,y_4j,x_4j1, y_4j1,fill="blue")
             
-            x_i4 = map.nodes[i][map.n-1].weight[0]*(w-100)+(w-100)//10
-            y_i4 = map.nodes[i][map.n-1].weight[1]*(h-100)+(h-100)//10
-            x_i14 = map.nodes[i+1][map.n-1].weight[0]*(w-100)+(w-100)//10
-            y_i14 = map.nodes[i+1][map.n-1].weight[1]*(h-100)+(h-100)//10
+            x_i4 = map.nodes[i][neuron_nbr-1].weight[0]*(w-100)+(w-100)//10
+            y_i4 = map.nodes[i][neuron_nbr-1].weight[1]*(h-100)+(h-100)//10
+            x_i14 = map.nodes[i+1][neuron_nbr-1].weight[0]*(w-100)+(w-100)//10
+            y_i14 = map.nodes[i+1][neuron_nbr-1].weight[1]*(h-100)+(h-100)//10
             can.create_line(x_i4,y_i4,x_i14, y_i14,fill="blue")
 
 def launch_SOM3():
@@ -113,9 +110,10 @@ def launch_SOM3():
         data = weights(n_data)
         
     if neur.get() == "":
-        neuron_nbr = 12
+        neuron_nbr = 10
     else:
         neuron_nbr = int(neur.get())
+        print(neuron_nbr)
     
     if nbiter.get() == "":
         nb_epoch = 300
@@ -128,7 +126,7 @@ def launch_SOM3():
     can1 = Canvas(fen1, width=w_l, height=h_l, bg='ivory')
 
     epoch_time = len(data)
-    carte = SOM(neuron_nbr,neuron_nbr, data, nb_epoch,kohonen())
+    carte = SOM(data, star())
     
     nb_iter = epoch_time * nb_epoch
     #draw_SOM(neuron_nbr,carte,can,h_r,w_r)
@@ -164,8 +162,11 @@ def launch_SOM3():
             N = int(var1.get())
             i = 0
             while i < N and c < nb_iter:
+                if i % epoch_time == 0:
+                    carte.generate_random_list()
+                vect = carte.unique_random_vector()
 
-                carte.train(c,epoch_time)
+                carte.train(c, epoch_time, vect)
                 i += 1
                 c = c+1
             can1.delete("all")
@@ -177,16 +178,24 @@ def launch_SOM3():
         global c, carte, data, nb_iter
         if var1.get() == "end" :
             for i in range(0,nb_iter-c+1):
-                carte.train(c+i, epoch_time)
+                if c+i % epoch_time == 0:
+                    carte.generate_random_list()
+                vect = carte.unique_random_vector()
+
+                carte.train(c+i, epoch_time, vect)
             can1.delete("all")
             draw_map(neuron_nbr, data,carte, can1, h_l,w_l)
             can1.update()
 
-        else :
+        else:
             N = int(var1.get())
             for i in range (c, nb_iter-N,N):
                 for k in range(1,N+1):
-                    carte.train(i+k,epoch_time)
+                    if i+k % epoch_time == 0:
+                        carte.generate_random_list()
+                    vect = carte.unique_random_vector()
+
+                    carte.train(i+k,epoch_time, vect)
                 can1.delete("all")
                 draw_map(neuron_nbr, data,carte, can1, h_l,w_l)
                 can1.update()
@@ -226,9 +235,6 @@ txt1 = Label(fen, text = "Number of epoch")
 nbiter = Entry(fen)
 
 #On choisit quelle distribution de données on souhaite
-
-
-
 txt2 = Label(fen, text = "Number of data :")
 n = Entry(fen)
 txt3 = Label(fen, text = "Number of neurons :")

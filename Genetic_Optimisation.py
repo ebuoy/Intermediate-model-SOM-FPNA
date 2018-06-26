@@ -45,7 +45,7 @@ class Genome:
     def run_fitness(self, data):
         epoch_time = len(data)
         nb_iter = epoch_time * self.epoch_nbr
-        som = SOM(data, kohonen(), self.epsilon_start, self.epsilon_end, self.sigma_start, self.sigma_end, self.epoch_nbr)
+        som = SOM(data, star(), self.epsilon_start, self.epsilon_end, self.sigma_start, self.sigma_end, self.epoch_nbr)
         for i in range(nb_iter):
             if i % epoch_time == 0:
                 som.generate_random_list()
@@ -138,11 +138,11 @@ class ConnexionGenome:
 
 class Population:
     def __init__(self):
-        img = Dataset("./image/Audrey.png")
+        img = Dataset("./image/limited_test/einstein.pgm")
         self.data = img.data
         self.current = []
         for i in range(nb_individuals):
-            self.current.append(ConnexionGenome())
+            self.current.append(Genome())
 
     def run(self):
         for i in range(nb_generations):
@@ -150,11 +150,10 @@ class Population:
             self.evaluate_all()
             self.select()
         print(self.current[0].to_string())
-        print(self.current[0].connexion_matrix)
 
     def evaluate_all(self):
         pool = mp.Pool(nb_individuals)
-        self.current = pool.starmap(ConnexionGenome.run_fitness, zip(self.current, itertools.repeat(self.data)))
+        self.current = pool.starmap(Genome.run_fitness, zip(self.current, itertools.repeat(self.data)))
         pool.close()
         pool.join()
 
@@ -167,8 +166,14 @@ class Population:
             if i <= elite_proportion*nb_individuals:
                 new.append(self.current[i])
             else:
-                child = ConnexionGenome()
+                child = Genome()
                 child.crossover(self.current[np.random.randint(0, nb_individuals)], self.current[np.random.randint(0, nb_individuals)])
                 child.mutation()
                 new.append(child)
         self.current = new
+
+
+
+
+a = Population()
+a.run()

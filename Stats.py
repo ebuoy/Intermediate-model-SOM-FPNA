@@ -72,7 +72,13 @@ class StatsRun:
         self.mean = compute_mean_error(data_comp, data, som.get_som_as_list())
         self.psnr = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
         self.diff, self.comp = Dataset.compute_compression_ratio(data, som, data_comp, images[self.img].nb_pictures[1])
+        # images[self.img].compression(som, self.img+"_"+self.conn+"_" + str(neuron_nbr) + "n_" + str(pictures_dim[0]) + "x" + str(pictures_dim[1]) + "_comp.png")
+        # images[self.img].save_compressed(som, self.conn+"_compressed.som")
+        # im2 = display_som(som.get_som_as_list())
+        # im2.save(output_path + self.img+"_"+self.conn+"_" + str(neuron_nbr) + "n_" + str(pictures_dim[0]) + "x" + str(pictures_dim[1]) + "_carte.png")
+
         print(self.to_string())
+        #print(np.bincount(data_comp))
 
     def to_string(self):
         res = self.conn+";"+self.img+";"
@@ -92,8 +98,8 @@ class FullTest:
         connex = ("koh", "sw", "star")
         for i in connex:
             for j in images:
-                for k in range(7):
-                    for l in range(7):
+                for k in range(10, 20):
+                    for l in range(10, 20):
                         self.current.append(StatsRun(i, j, k, l))
 
     def run(self):

@@ -2,12 +2,12 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)  # Used to print the data completely
 
 # Images
-pictures_dim = (9, 9)
-output_path = "./results/final_test/"
+pictures_dim = (3, 3)
+output_path = "./results/final/"
 input_path = "./image/limited_test/"
 
 # SOM variables
-neuron_nbr = 12
+neuron_nbr = 2
 epoch_nbr = 50
 epsilon_start = 0.6
 epsilon_end = 0.05
@@ -16,14 +16,14 @@ sigma_end = 0.001
 
 # PSOM variant
 psom = False
-omega = 10**(-8)
+omega = 3*10**(-5)
 
 # Genetic Optimisation
-range_epoch_nbr = (20, 100)
-range_epsilon_start = (0.1, 1)
-range_epsilon_end = (0.001, 1)
-range_sigma_start = (0.1, 1)
-range_sigma_end = (0.001, 1)
+range_epoch_nbr = (50, 50)
+range_epsilon_start = (0.01, 1)
+range_epsilon_end = (0.0001, 1)
+range_sigma_start = (0.01, 1)
+range_sigma_end = (0.0001, 1)
 
 probability_neural_link = 0.5
 probability_link = 0.2
