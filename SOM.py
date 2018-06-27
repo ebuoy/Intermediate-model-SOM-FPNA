@@ -38,7 +38,6 @@ class SOM:
         
         self.data = np.array(data)
         self.vector_list = None
-        print(self.data.shape)
         data_shape = self.data.shape[1]
         data_max = np.max(self.data)
         data_min = np.min(self.data)
@@ -186,6 +185,12 @@ class SOM:
         out = "n"+str(v2[0])+','+str(v2[1])
         self.neural_graph.remove_edge(inp, out)
         self.neural_graph.remove_edge(out, inp)
+
+    def create_edges(self, v1, v2):  # create_edges((x, y), (x2, y2))
+        inp = "n"+str(v1[0])+','+str(v1[1])
+        out = "n"+str(v2[0])+','+str(v2[1])
+        self.neural_graph.add_edge(Edge(inp, out, 1))
+        self.neural_graph.add_edge(Edge(out, inp, 1))
 
     def fully_random_vector(self):
         return np.random.randint(np.shape(self.data)[0])

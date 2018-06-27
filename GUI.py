@@ -5,7 +5,7 @@ from Simple_Data_Sample import *
 from Connections import *
 import time
 
-radius = 3
+radius = 2
 width = 600
 height = 600
 dataset_size = 2000
@@ -25,24 +25,24 @@ class GraphicalSOM:
         self.window.title("Graphical Self-Organised Map")
         self.canvas = Canvas(self.window, width=width, height=height, bg="ivory")
         self.canvas.grid(row=0, column=0, columnspan=10, rowspan=10, padx=10, pady=10)
-        self.SOM = SOM(sierpinski_carpet(dataset_size, 2), kohonen())
+        self.SOM = SOM(sierpinski_carpet(dataset_size, 2), star())
         self.epoch_time = len(self.SOM.data)
         self.current_iteration = 0
         self.total_iterations = self.epoch_time * epoch_nbr
         self.running = False
 
-        self.item = None
-        self.link_menu = Menu(self.window, tearoff=0)
-        self.link_menu.add_command(label="Delete", command=self.delete_edge)
-        self.neuron_menu = Menu(self.window, tearoff=0)
-        self.neuron_menu.add_command(label="Move", command=self.move_neuron)
-
         self.draw_buttons()
         self.draw_data()
         self.draw_map()
         self.draw_metrics()
+
+        self.item = None
         self.canvas.bind("<Button-1>", self.deselect)
         self.canvas.bind("<Button-3>", self.selection)
+        self.canvas.bind("<Button-2>", self.move_neuron)
+        self.window.bind('c', self.create_edge)
+        self.window.bind('d', self.delete_edge)
+
         self.canvas.update()
         self.window.mainloop()
 
@@ -68,8 +68,8 @@ class GraphicalSOM:
     def draw_map(self):
         positions = np.empty((neuron_nbr, neuron_nbr), dtype=list)
         adjacency_matrix = self.SOM.neural_adjacency_matrix
-        for x in range(neuron_nbr):
-            for y in range(neuron_nbr):
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
                 positions[x, y] = project(self.SOM.nodes[x, y].weight[0], self.SOM.nodes[x, y].weight[1])
                 draw_data_point(self.canvas, positions[x, y][0], positions[x, y][1], "blue", ("neuron", str(x)+";"+str(y)))
                 for k in range(y*neuron_nbr+x):
@@ -123,18 +123,10 @@ class GraphicalSOM:
         self.item = self.canvas.find_closest(event.x, event.y)
         if self.item and "link" in self.canvas.gettags(self.item):
             self.canvas.itemconfig(self.item, fill="green")
-            try:
-                self.link_menu.tk_popup(event.x_root, event.y_root, 0)
-            finally:
-                self.link_menu.grab_release()
         elif self.item and "neuron" in self.canvas.gettags(self.item):
             self.canvas.itemconfig(self.item, fill="green", outline="green")
-            try:
-                self.neuron_menu.tk_popup(event.x_root, event.y_root, 0)
-            finally:
-                self.neuron_menu.grab_release()
 
-    def delete_edge(self):
+    def delete_edge(self, event):
         if self.item and "link" in self.canvas.gettags(self.item):
             print(self.canvas.gettags(self.item))
             coords = self.canvas.gettags(self.item)[1]
@@ -145,9 +137,34 @@ class GraphicalSOM:
             self.item = None
             self.canvas.update()
 
-    def move_neuron(self):
+    def create_edge(self, event):
+        target = self.canvas.find_closest(event.x-10, event.y-10)
+        if self.item and target and "neuron" in self.canvas.gettags(self.item) and "neuron" in self.canvas.gettags(target):
+            print(self.canvas.gettags(self.item), self.canvas.gettags(target))
+
+            src_coords = self.canvas.gettags(self.item)[1]
+            src_coords = src_coords.split(';')
+            tgt_coords = self.canvas.gettags(target)[1]
+            tgt_coords = tgt_coords.split(';')
+
+            self.SOM.create_edges((int(src_coords[0]), int(src_coords[1])), (int(tgt_coords[0]), int(tgt_coords[1])))
+            self.SOM.compute_neurons_distance()
+            self.refresh()
+
+    def move_neuron(self, event):
         if self.item and "neuron" in self.canvas.gettags(self.item):
             print(self.canvas.gettags(self.item))
+            coords = self.canvas.gettags(self.item)[1]
+            coords = coords.split(';')
+            self.SOM.nodes[int(coords[0]), int(coords[1])].weight = np.array([event.x/width, event.y/height])
+            self.refresh()
+
+    def refresh(self):
+        self.canvas.delete("all")
+        self.draw_data()
+        self.draw_map()
+        self.canvas.update()
+        self.update_metrics()
 
     def run_once(self):
         try:
@@ -164,11 +181,7 @@ class GraphicalSOM:
             vect = self.SOM.unique_random_vector()
             self.SOM.train(self.current_iteration, self.epoch_time, vect)
             self.current_iteration += 1
-        self.canvas.delete("all")
-        self.draw_data()
-        self.draw_map()
-        self.canvas.update()
-        self.update_metrics()
+        self.refresh()
 
     def run(self):
         start_time = time.time()
