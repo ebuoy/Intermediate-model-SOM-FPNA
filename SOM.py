@@ -137,7 +137,7 @@ class SOM:
         if iteration % epoch_time == 0:
             self.epsilon += self.epsilon_stepping
             self.sigma += self.sigma_stepping
-            if psom:
+            if psom and iteration > 0:
                 self.pruning_neighbors()
             self.refresh_distance_vector = True
         if self.refresh_distance_vector:
