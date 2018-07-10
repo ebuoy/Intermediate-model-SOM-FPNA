@@ -7,7 +7,7 @@ output_path = "./results/final/"
 input_path = "./image/limited_test/"
 
 # SOM variables
-neuron_nbr = 2
+neuron_nbr = 9
 epoch_nbr = 50
 epsilon_start = 0.6
 epsilon_end = 0.05
@@ -16,7 +16,12 @@ sigma_end = 0.001
 
 # PSOM variant
 psom = False
-omega = 3*10**(-5)
+omega = 3*10**(-7)
+
+# Star center change
+dsom = True
+switch_threshold = 2.3
+range_threshold = (0.5, 5)
 
 # Genetic Optimisation
 range_epoch_nbr = (50, 50)

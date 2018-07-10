@@ -1,4 +1,5 @@
 from Model import *
+from DynamicSOM import *
 import itertools
 import multiprocessing as mp
 
@@ -10,6 +11,46 @@ def mutate(value, bounds):
     elif value < bounds[0]:
         value = bounds[0]
     return value
+
+
+class DynamicGenome:
+    def __init__(self):
+        self.threshold = (range_threshold[1]-range_threshold[0]) * np.random.random() + range_threshold[0]
+        self.fitness = 255
+
+    def crossover(self, father, mother):
+        ratio = np.random.random()
+        self.threshold = father.threshold * ratio + (1 - ratio) * mother.threshold
+        self.fitness = 255
+
+    def mutation(self):
+        if probability_mutation > np.random.random():
+            self.threshold = mutate(self.threshold, range_threshold)
+
+    def run_fitness(self, data):
+        epoch_time = len(data)
+        nb_iter = epoch_time * epoch_nbr
+        som = DynamicSOM(data, star(), self.threshold)
+        for i in range(nb_iter):
+            if i % epoch_time == 0:
+                som.generate_random_list()
+            vector = som.unique_random_vector()
+            som.train(i, epoch_time, vector)
+        data_comp = som.winners()
+        self.fitness = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
+        return self
+
+    def to_string(self):
+        res = ""
+        res += "Fitness :"+str(self.fitness)
+        res += " (threshold: " + str(self.threshold)+")"
+        return res
+
+    def __lt__(self, other):
+        return self.fitness < other.fitness
+
+    def __eq__(self, other):
+        return self.fitness == other.fitness
 
 
 class Genome:
@@ -138,11 +179,11 @@ class ConnexionGenome:
 
 class Population:
     def __init__(self):
-        img = Dataset("./image/limited_test/einstein.pgm")
+        img = Dataset("./image/limited_test/peppers.pgm")
         self.data = img.data
         self.current = []
         for i in range(nb_individuals):
-            self.current.append(Genome())
+            self.current.append(DynamicGenome())
 
     def run(self):
         for i in range(nb_generations):
@@ -153,7 +194,7 @@ class Population:
 
     def evaluate_all(self):
         pool = mp.Pool(nb_individuals)
-        self.current = pool.starmap(Genome.run_fitness, zip(self.current, itertools.repeat(self.data)))
+        self.current = pool.starmap(DynamicGenome.run_fitness, zip(self.current, itertools.repeat(self.data)))
         pool.close()
         pool.join()
 
@@ -166,7 +207,7 @@ class Population:
             if i <= elite_proportion*nb_individuals:
                 new.append(self.current[i])
             else:
-                child = Genome()
+                child = DynamicGenome()
                 child.crossover(self.current[np.random.randint(0, nb_individuals)], self.current[np.random.randint(0, nb_individuals)])
                 child.mutation()
                 new.append(child)

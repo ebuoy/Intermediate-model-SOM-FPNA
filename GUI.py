@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.ttk import *
 from Simple_Data_Sample import *
 from Connections import *
+from DynamicSOM import *
 import time
 
 radius = 2
@@ -25,7 +26,8 @@ class GraphicalSOM:
         self.window.title("Graphical Self-Organised Map")
         self.canvas = Canvas(self.window, width=width, height=height, bg="ivory")
         self.canvas.grid(row=0, column=0, columnspan=10, rowspan=10, padx=10, pady=10)
-        self.SOM = SOM(sierpinski_carpet(dataset_size, 2), star())
+        np.random.seed(0)
+        self.SOM = DynamicSOM(sierpinski_carpet(dataset_size, 2), star())
         self.epoch_time = len(self.SOM.data)
         self.current_iteration = 0
         self.total_iterations = self.epoch_time * epoch_nbr
@@ -138,6 +140,7 @@ class GraphicalSOM:
             self.canvas.update()
 
     def create_edge(self, event):
+        print(event.x-10, event.y-10)
         target = self.canvas.find_closest(event.x-10, event.y-10)
         if self.item and target and "neuron" in self.canvas.gettags(self.item) and "neuron" in self.canvas.gettags(target):
             print(self.canvas.gettags(self.item), self.canvas.gettags(target))

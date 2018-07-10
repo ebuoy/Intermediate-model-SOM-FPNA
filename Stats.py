@@ -1,6 +1,7 @@
 from Model import *
 import itertools
 import multiprocessing as mp
+from DynamicSOM import *
 
 connexions_matrices = {"koh": kohonen(), "sw": small_worlds(), "star": star()}
 images = {}
@@ -61,7 +62,7 @@ class StatsRun:
         epoch_time = len(data)
         nb_iter = epoch_time * self.epoch_nbr
         np.random.seed(self.seed_one)
-        som = SOM(data, connexions_matrices[self.conn])
+        som = DynamicSOM(data, connexions_matrices[self.conn])
         np.random.seed(self.seed_two)
         for i in range(nb_iter):
             if i % epoch_time == 0:
@@ -72,6 +73,7 @@ class StatsRun:
         self.mean = compute_mean_error(data_comp, data, som.get_som_as_list())
         self.psnr = peak_signal_to_noise_ratio(data_comp, data, som.get_som_as_list())
         self.diff, self.comp = Dataset.compute_compression_ratio(data, som, data_comp, images[self.img].nb_pictures[1])
+        self.changed_conn = som.changed_connexions
         # images[self.img].compression(som, self.img+"_"+self.conn+"_" + str(neuron_nbr) + "n_" + str(pictures_dim[0]) + "x" + str(pictures_dim[1]) + "_comp.png")
         # images[self.img].save_compressed(som, self.conn+"_compressed.som")
         # im2 = display_som(som.get_som_as_list())
@@ -84,7 +86,7 @@ class StatsRun:
         res = self.conn+";"+self.img+";"
         res += str(pictures_dim[0])+";"+str(neuron_nbr)+";"
         res += str(self.mean)+";"+str(self.psnr)+";"
-        res += str(self.diff)+";"+str(self.comp)
+        res += str(self.diff)+";"+str(self.comp)+";"+str(self.changed_conn)
         return res
 
 
@@ -95,11 +97,11 @@ class FullTest:
             images[f] = Dataset(input_path + f)
             database[f] = images[f].data
         self.current = []
-        connex = ("koh", "sw", "star")
+        connex = ("star",)
         for i in connex:
             for j in images:
-                for k in range(10, 20):
-                    for l in range(10, 20):
+                for k in range(0, 10):
+                    for l in range(0, 10):
                         self.current.append(StatsRun(i, j, k, l))
 
     def run(self):
