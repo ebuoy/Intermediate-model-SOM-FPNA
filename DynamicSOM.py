@@ -276,3 +276,9 @@ class DynamicSOM:
         for x in range(neuron_nbr):
             for y in range(neuron_nbr):
                 self.nodes[x, y].weight = list[y*neuron_nbr + x]
+
+    def print_connexions(self):
+        for x in range(neuron_nbr):
+            for y in range(neuron_nbr):
+                print(self.nodes[x, y].current_center, end='')
+            print('')

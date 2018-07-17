@@ -4,11 +4,13 @@ from tkinter.ttk import *
 from Simple_Data_Sample import *
 from Connections import *
 from DynamicSOM import *
+import colorsys
 import time
 
 radius = 2
 width = 600
 height = 600
+connexions_size = 300
 dataset_size = 2000
 
 
@@ -20,23 +22,35 @@ def project(x, y):
     return radius+x*(width-radius), radius+y*(height-radius)
 
 
+def convert_color(srgb):
+    return "#"+'%02x' % int(srgb[0]*255) + '%02x' % int(srgb[1]*255) + '%02x' % int(srgb[2]*255)
+
+
 class GraphicalSOM:
     def __init__(self):
         self.window = Tk()
         self.window.title("Graphical Self-Organised Map")
         self.canvas = Canvas(self.window, width=width, height=height, bg="ivory")
         self.canvas.grid(row=0, column=0, columnspan=10, rowspan=10, padx=10, pady=10)
+        self.connexion = Canvas(self.window, width=connexions_size, height=connexions_size, bg="ivory")
+        self.connexion.grid(row=6, column=10, columnspan=1, rowspan=1, padx=10, pady=10)
         np.random.seed(0)
         self.SOM = DynamicSOM(sierpinski_carpet(dataset_size, 2), star())
         self.epoch_time = len(self.SOM.data)
         self.current_iteration = 0
         self.total_iterations = self.epoch_time * epoch_nbr
         self.running = False
+        self.colors = [None] * (neuron_nbr//3)**2
+        self.outline = [None] * (neuron_nbr//3)**2
+        for i in range(len(self.colors)):
+            self.colors[i] = convert_color(colorsys.hsv_to_rgb(i/len(self.colors), 1.0, 0.5))
+            self.outline[i] = convert_color(colorsys.hsv_to_rgb(i/len(self.colors), 1.0, 1.0))
 
         self.draw_buttons()
         self.draw_data()
         self.draw_map()
         self.draw_metrics()
+        self.draw_connexions()
 
         self.item = None
         self.canvas.bind("<Button-1>", self.deselect)
@@ -46,6 +60,7 @@ class GraphicalSOM:
         self.window.bind('d', self.delete_edge)
 
         self.canvas.update()
+        self.connexion.update()
         self.window.mainloop()
 
     def draw_buttons(self):
@@ -80,6 +95,17 @@ class GraphicalSOM:
                         y1 = k//neuron_nbr
                         self.canvas.create_line(positions[x, y][0], positions[x, y][1], positions[x1, y1][0], positions[x1, y1][1],
                                                 fill="blue", tags=("link", str(x)+";"+str(y)+";"+str(x1)+";"+str(y1)))
+
+    def draw_connexions(self):
+        self.connexion.delete("all")
+        size = connexions_size/neuron_nbr
+        for y in range(neuron_nbr):
+            for x in range(neuron_nbr):
+                if x % 3 == 1 and y % 3 == 1:
+                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[y//3 * 3 + x//3], fill=self.colors[y//3 * 3 + x//3])
+                else:
+                    center = self.SOM.nodes[x, y].neighbour[self.SOM.nodes[x, y].current_center]
+                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[center[1]//3 * 3 + center[0]//3], fill=self.colors[center[1]//3 * 3 + center[0]//3])
 
     def draw_metrics(self):
         self.ite_str = StringVar()
@@ -166,7 +192,9 @@ class GraphicalSOM:
         self.canvas.delete("all")
         self.draw_data()
         self.draw_map()
+        self.draw_connexions()
         self.canvas.update()
+        self.connexion.update()
         self.update_metrics()
 
     def run_once(self):
@@ -199,7 +227,9 @@ class GraphicalSOM:
                 self.canvas.delete("all")
                 self.draw_data()
                 self.draw_map()
+                self.draw_connexions()
                 self.canvas.update()
+                self.connexion.update()
                 start_time = time.time()
 
 

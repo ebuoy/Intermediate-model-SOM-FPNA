@@ -1,6 +1,7 @@
 from Images import *
 from SOM import *
 from Connections import *
+from DynamicSOM import *
 
 
 def noLink():
@@ -97,7 +98,7 @@ def peak_signal_to_noise_ratio(datacomp, datamat, SOMList):
 
 def run():
     np.random.seed(1024)
-    img = Dataset("./image/limited_test/einstein.pgm")
+    img = Dataset("./image/limited_test/peppers.pgm")
     data = img.data
     # data = load_image_folder("./image/")
 
@@ -107,7 +108,7 @@ def run():
     epoch_time = len(data)
     nb_iter = epoch_time * epoch_nbr
 
-    carte = SOM(data, small_worlds())
+    carte = DynamicSOM(data, star())
 #    datacomp = carte.winners()
 
 #    print("Initial mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
@@ -130,18 +131,19 @@ def run():
                 print("PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
                 old = np.array(datacomp)
 
+    carte.print_connexions()
     datacomp = carte.winners()
     print(datacomp)
     print("Final mean pixel error SOM: ", compute_mean_error(datacomp, data, carte.get_som_as_list()))
     print("Final PSNR: ", peak_signal_to_noise_ratio(datacomp, data, carte.get_som_as_list()))
 
-    img.compression(carte, "sw_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
-    img.save_compressed(carte, "sw_compressed.som")
+    img.compression(carte, "star_"+str(neuron_nbr) + "n_"+str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_comp.png")
+    img.save_compressed(carte, "star_compressed.som")
     if psom:
         im1 = display_som_links(carte.get_som_as_list(), carte.neural_adjacency_matrix)
         im1.save(output_path+"links.png")
     im2 = display_som(carte.get_som_as_list())
-    im2.save(output_path + "sw_"+str(neuron_nbr) + "n_" + str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_carte.png")
+    im2.save(output_path + "star_"+str(neuron_nbr) + "n_" + str(pictures_dim[0])+"x"+str(pictures_dim[1])+"_"+str(epoch_nbr)+"epoch_carte.png")
 
 
 def run_from_som():
