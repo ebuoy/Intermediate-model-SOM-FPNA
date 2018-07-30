@@ -1,0 +1,6 @@
+Les tests ont été fait avec 10 neurones et des imagettes 3x3.
+ksom -> Kohonen
+psom -> PruningSOM
+xe-y -> valeur d'oméga utilisée pour psom. (à partir de 5e-7, aucune arête n'était supprimée)
+
+Dans les logs il y la matrice d'adjacence, les arêtes supprimées et la moyennes de la différence par pixel au cours de l'exécution.

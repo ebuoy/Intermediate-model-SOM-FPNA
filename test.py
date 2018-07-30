@@ -20,7 +20,7 @@ def draw_SOM(n,map,can,h,w):
     
     mat = map.global_connections.extract_neurons_graph()
     
-    for i in range (len(mat)):
+    for i in range(len(mat)):
         for j in range(len(mat[0])):
             
             x_n = w//(n+1)+i*w//(n+1)

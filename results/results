@@ -15,4 +15,9 @@ SOM SW ALL 21x21
 Mean error :  8.948748394762529
 Used neurons : 271 / 441 ( 61.451247165532884 %)
 
+SOM koh 5x5 Img 30x30
+
+Mean error :  6.771737766159934
+Used neurons : 862 / 900 ( 95.77777777777777 %)
+
 

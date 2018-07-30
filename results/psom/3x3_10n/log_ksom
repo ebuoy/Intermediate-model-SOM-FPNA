@@ -1,0 +1,301 @@
+Epoch :  1 / 100
+Changed values : 0
+Mean error :  87.79951975697712
+Epoch :  2 / 100
+Changed values : 12653
+Mean error :  69.4915693494885
+Epoch :  3 / 100
+Changed values : 12494
+Mean error :  67.99017229544025
+Epoch :  4 / 100
+Changed values : 12113
+Mean error :  26.71638979084596
+Epoch :  5 / 100
+Changed values : 10547
+Mean error :  28.02133979143086
+Epoch :  6 / 100
+Changed values : 11142
+Mean error :  38.48896082355719
+Epoch :  7 / 100
+Changed values : 12834
+Mean error :  77.87201882641085
+Epoch :  8 / 100
+Changed values : 12650
+Mean error :  61.70686596003215
+Epoch :  9 / 100
+Changed values : 12344
+Mean error :  38.49642522105461
+Epoch :  10 / 100
+Changed values : 10441
+Mean error :  25.586958093700716
+Epoch :  11 / 100
+Changed values : 10378
+Mean error :  26.85020467142466
+Epoch :  12 / 100
+Changed values : 13331
+Mean error :  25.134150604945372
+Epoch :  13 / 100
+Changed values : 11328
+Mean error :  55.202828589325435
+Epoch :  14 / 100
+Changed values : 12430
+Mean error :  23.453681799665173
+Epoch :  15 / 100
+Changed values : 10410
+Mean error :  28.62181563396051
+Epoch :  16 / 100
+Changed values : 10405
+Mean error :  24.207927733392676
+Epoch :  17 / 100
+Changed values : 10998
+Mean error :  85.58277138905703
+Epoch :  18 / 100
+Changed values : 12728
+Mean error :  23.762371456497743
+Epoch :  19 / 100
+Changed values : 10224
+Mean error :  23.140496758712924
+Epoch :  20 / 100
+Changed values : 10181
+Mean error :  23.1020506529657
+Epoch :  21 / 100
+Changed values : 10204
+Mean error :  24.81430334556194
+Epoch :  22 / 100
+Changed values : 10177
+Mean error :  26.505751552100204
+Epoch :  23 / 100
+Changed values : 10216
+Mean error :  18.892244706687862
+Epoch :  24 / 100
+Changed values : 10167
+Mean error :  20.11795327190018
+Epoch :  25 / 100
+Changed values : 10190
+Mean error :  23.90169589335545
+Epoch :  26 / 100
+Changed values : 10191
+Mean error :  24.453717333556714
+Epoch :  27 / 100
+Changed values : 10177
+Mean error :  22.4844313925394
+Epoch :  28 / 100
+Changed values : 10182
+Mean error :  20.420970553368832
+Epoch :  29 / 100
+Changed values : 10154
+Mean error :  21.619947950796096
+Epoch :  30 / 100
+Changed values : 10159
+Mean error :  19.232667925511976
+Epoch :  31 / 100
+Changed values : 10187
+Mean error :  21.591525177785112
+Epoch :  32 / 100
+Changed values : 10063
+Mean error :  18.40942731333601
+Epoch :  33 / 100
+Changed values : 10004
+Mean error :  21.13407937476854
+Epoch :  34 / 100
+Changed values : 9986
+Mean error :  22.063272962282564
+Epoch :  35 / 100
+Changed values : 10010
+Mean error :  18.878629493079323
+Epoch :  36 / 100
+Changed values : 9943
+Mean error :  16.73654324024758
+Epoch :  37 / 100
+Changed values : 9845
+Mean error :  21.342456231886217
+Epoch :  38 / 100
+Changed values : 9917
+Mean error :  21.39048678593995
+Epoch :  39 / 100
+Changed values : 9902
+Mean error :  23.4072576198431
+Epoch :  40 / 100
+Changed values : 9940
+Mean error :  18.274754814776664
+Epoch :  41 / 100
+Changed values : 9933
+Mean error :  20.204676199721728
+Epoch :  42 / 100
+Changed values : 9837
+Mean error :  17.32771561062842
+Epoch :  43 / 100
+Changed values : 9892
+Mean error :  20.610809901219923
+Epoch :  44 / 100
+Changed values : 9857
+Mean error :  27.279037234623157
+Epoch :  45 / 100
+Changed values : 9779
+Mean error :  20.65627957750431
+Epoch :  46 / 100
+Changed values : 9834
+Mean error :  15.441401291722235
+Epoch :  47 / 100
+Changed values : 9799
+Mean error :  17.27276546795383
+Epoch :  48 / 100
+Changed values : 9741
+Mean error :  16.621024629925767
+Epoch :  49 / 100
+Changed values : 9735
+Mean error :  19.701395060943263
+Epoch :  50 / 100
+Changed values : 9815
+Mean error :  15.727492670639172
+Epoch :  51 / 100
+Changed values : 9745
+Mean error :  13.312024846139998
+Epoch :  52 / 100
+Changed values : 9749
+Mean error :  14.832296392943496
+Epoch :  53 / 100
+Changed values : 9704
+Mean error :  15.01186963899376
+Epoch :  54 / 100
+Changed values : 9656
+Mean error :  16.017532599835828
+Epoch :  55 / 100
+Changed values : 9712
+Mean error :  16.62757898586219
+Epoch :  56 / 100
+Changed values : 9676
+Mean error :  15.137860646675184
+Epoch :  57 / 100
+Changed values : 9645
+Mean error :  14.897995870340816
+Epoch :  58 / 100
+Changed values : 9535
+Mean error :  14.791537633777798
+Epoch :  59 / 100
+Changed values : 9540
+Mean error :  13.429315447893728
+Epoch :  60 / 100
+Changed values : 9453
+Mean error :  13.864660126698006
+Epoch :  61 / 100
+Changed values : 9504
+Mean error :  14.081647886612316
+Epoch :  62 / 100
+Changed values : 9529
+Mean error :  14.53367475889412
+Epoch :  63 / 100
+Changed values : 9656
+Mean error :  13.37722942618574
+Epoch :  64 / 100
+Changed values : 9585
+Mean error :  13.974218861818024
+Epoch :  65 / 100
+Changed values : 9581
+Mean error :  14.08134575654714
+Epoch :  66 / 100
+Changed values : 9490
+Mean error :  13.851025447857362
+Epoch :  67 / 100
+Changed values : 9428
+Mean error :  13.38175704787573
+Epoch :  68 / 100
+Changed values : 9272
+Mean error :  12.883022139261842
+Epoch :  69 / 100
+Changed values : 9368
+Mean error :  11.861650056682608
+Epoch :  70 / 100
+Changed values : 9346
+Mean error :  12.883136842509503
+Epoch :  71 / 100
+Changed values : 9152
+Mean error :  12.251438060975003
+Epoch :  72 / 100
+Changed values : 9400
+Mean error :  12.469649687198824
+Epoch :  73 / 100
+Changed values : 9248
+Mean error :  11.941406112929762
+Epoch :  74 / 100
+Changed values : 9501
+Mean error :  11.850748972976412
+Epoch :  75 / 100
+Changed values : 9409
+Mean error :  10.890872747666121
+Epoch :  76 / 100
+Changed values : 9422
+Mean error :  12.7742483805928
+Epoch :  77 / 100
+Changed values : 9497
+Mean error :  12.198927272493851
+Epoch :  78 / 100
+Changed values : 9542
+Mean error :  10.808877799071585
+Epoch :  79 / 100
+Changed values : 9467
+Mean error :  10.478460350082806
+Epoch :  80 / 100
+Changed values : 9168
+Mean error :  10.343141925753683
+Epoch :  81 / 100
+Changed values : 8919
+Mean error :  9.851115678114358
+Epoch :  82 / 100
+Changed values : 8813
+Mean error :  10.022661370212722
+Epoch :  83 / 100
+Changed values : 8863
+Mean error :  9.685700976832267
+Epoch :  84 / 100
+Changed values : 7963
+Mean error :  8.791733991312993
+Epoch :  85 / 100
+Changed values : 7190
+Mean error :  9.043702309390744
+Epoch :  86 / 100
+Changed values : 8404
+Mean error :  8.45182210754944
+Epoch :  87 / 100
+Changed values : 7596
+Mean error :  8.486980094938195
+Epoch :  88 / 100
+Changed values : 7464
+Mean error :  7.909694708084526
+Epoch :  89 / 100
+Changed values : 6756
+Mean error :  7.655844766303506
+Epoch :  90 / 100
+Changed values : 5645
+Mean error :  7.266688838412916
+Epoch :  91 / 100
+Changed values : 5397
+Mean error :  7.2264067493912565
+Epoch :  92 / 100
+Changed values : 4937
+Mean error :  6.957152306283704
+Epoch :  93 / 100
+Changed values : 4143
+Mean error :  6.764234584227703
+Epoch :  94 / 100
+Changed values : 3826
+Mean error :  6.674605608838243
+Epoch :  95 / 100
+Changed values : 3460
+Mean error :  6.527021691093252
+Epoch :  96 / 100
+Changed values : 3112
+Mean error :  6.3728831722543955
+Epoch :  97 / 100
+Changed values : 2297
+Mean error :  6.311791664519232
+Epoch :  98 / 100
+Changed values : 2059
+Mean error :  6.214164260629441
+Epoch :  99 / 100
+Changed values : 1627
+Mean error :  6.166803422503455
+Epoch :  100 / 100
+Changed values : 1113
+Mean error :  6.132384811338985
+Used neurons : 100 / 100 ( 100.0 %)

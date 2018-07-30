@@ -1,0 +1,23 @@
+Kohonen : 
+
+Final mean pixel error SOM:  11.383246961806268
+Final PSNR:  21.793312496757675
+Used neurons : 221 / 225 ( 98.22222222222223 %)
+Taux de compression du codage différentiel : 1.0028011204481793
+Taux de compression total : 5.087140838436175
+
+Small Worlds :
+
+Final mean pixel error SOM:  9.270854430902316
+Final PSNR:  23.565565346326064
+Used neurons : 218 / 225 ( 96.88888888888889 %)
+Taux de compression du codage différentiel : 1.0039370078740157
+Taux de compression total : 5.07800812139346
+
+Star :
+
+Final mean pixel error SOM:  8.984377970821702
+Final PSNR:  23.646900287977772
+Used neurons : 221 / 225 ( 98.22222222222223 %)
+Taux de compression du codage différentiel : 0.996186844613918
+Taux de compression total : 5.117160578911096

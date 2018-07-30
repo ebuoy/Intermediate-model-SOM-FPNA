@@ -4,6 +4,10 @@ from tkinter.ttk import *
 from Simple_Data_Sample import *
 from Connections import *
 from DynamicSOM import *
+from GNG_SOM import *
+from PCSOM import *
+from Original_PCSOM import *
+
 import colorsys
 import time
 
@@ -35,7 +39,7 @@ class GraphicalSOM:
         self.connexion = Canvas(self.window, width=connexions_size, height=connexions_size, bg="ivory")
         self.connexion.grid(row=6, column=10, columnspan=1, rowspan=1, padx=10, pady=10)
         np.random.seed(0)
-        self.SOM = DynamicSOM(sierpinski_carpet(dataset_size, 2), star())
+        self.SOM = OriginalPCSOM(sierpinski_carpet(dataset_size, 1), kohonen())
         self.epoch_time = len(self.SOM.data)
         self.current_iteration = 0
         self.total_iterations = self.epoch_time * epoch_nbr
@@ -50,7 +54,7 @@ class GraphicalSOM:
         self.draw_data()
         self.draw_map()
         self.draw_metrics()
-        self.draw_connexions()
+        #self.draw_connexions()
 
         self.item = None
         self.canvas.bind("<Button-1>", self.deselect)
@@ -102,10 +106,10 @@ class GraphicalSOM:
         for y in range(neuron_nbr):
             for x in range(neuron_nbr):
                 if x % 3 == 1 and y % 3 == 1:
-                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[y//3 * 3 + x//3], fill=self.colors[y//3 * 3 + x//3])
+                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[y//3 * neuron_nbr//3 + x//3], fill=self.colors[y//3 * neuron_nbr//3 + x//3])
                 else:
                     center = self.SOM.nodes[x, y].neighbour[self.SOM.nodes[x, y].current_center]
-                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[center[1]//3 * 3 + center[0]//3], fill=self.colors[center[1]//3 * 3 + center[0]//3])
+                    self.connexion.create_rectangle(x*size, y*size, (x+1)*size, (y+1)*size, outline=self.outline[center[1]//3 * neuron_nbr//3 + center[0]//3], fill=self.colors[center[1]//3 * neuron_nbr//3 + center[0]//3])
 
     def draw_metrics(self):
         self.ite_str = StringVar()
@@ -192,7 +196,7 @@ class GraphicalSOM:
         self.canvas.delete("all")
         self.draw_data()
         self.draw_map()
-        self.draw_connexions()
+        #self.draw_connexions()
         self.canvas.update()
         self.connexion.update()
         self.update_metrics()
@@ -227,7 +231,7 @@ class GraphicalSOM:
                 self.canvas.delete("all")
                 self.draw_data()
                 self.draw_map()
-                self.draw_connexions()
+                #self.draw_connexions()
                 self.canvas.update()
                 self.connexion.update()
                 start_time = time.time()

@@ -1,0 +1,126 @@
+100 EPOCHS
+
+Epoch :  100 / 100
+Changed values SOM : 3261
+Mean error SOM:  6.790198467579495
+PSNR:  25.787089521453307
+Used neurons : 425 / 441 ( 96.3718820861678 %)
+
+Epoch :  100 / 100
+Changed values SOM : 1758
+Mean error SOM:  6.34360949555953
+PSNR:  28.199033817742297
+Used neurons : 144 / 144 ( 100.0 %)
+
+./results/deep/star_12n_3x3_100epoch_comp.png
+Pictures number : [21 21]
+Used neurons : 404 / 441 ( 91.60997732426304 %)
+
+
+200 EPOCHS
+
+Epoch :  200 / 200
+Changed values SOM : 3292
+Mean error SOM:  6.5894973535691745
+PSNR:  26.116136226530635
+Used neurons : 424 / 441 ( 96.14512471655328 %)
+
+Epoch :  200 / 200
+Changed values SOM : 1688
+Mean error SOM:  6.8484339963551255
+PSNR:  27.595504322736172
+Used neurons : 144 / 144 ( 100.0 %)
+
+./results/deep/star_12n_3x3_200epoch_comp.png
+Pictures number : [21 21]
+Used neurons : 400 / 441 ( 90.702947845805 %)
+
+
+300 EPOCHS
+
+Epoch :  300 / 300
+Changed values SOM : 3295
+Mean error SOM:  6.470908521144219
+PSNR:  26.31199234591652
+Used neurons : 432 / 441 ( 97.95918367346938 %)
+
+Epoch :  300 / 300
+Changed values SOM : 1758
+Mean error SOM:  7.116808287143769
+PSNR:  27.248233720951333
+Used neurons : 144 / 144 ( 100.0 %)
+
+./results/deep/star_12n_3x3_300epoch_comp.png
+Pictures number : [21 21]
+Used neurons : 404 / 441 ( 91.60997732426304 %)
+
+
+400 EPOCHS
+
+Epoch :  400 / 400
+Changed values SOM : 3289
+Mean error SOM:  6.480174282761227
+PSNR:  26.2603383169915
+Used neurons : 425 / 441 ( 96.3718820861678 %)
+
+Epoch :  400 / 400
+Changed values SOM : 1730
+Mean error SOM:  7.230272125065332
+PSNR:  27.11509694331861
+Used neurons : 144 / 144 ( 100.0 %)
+
+./results/deep/star_12n_3x3_400epoch_comp.png
+Pictures number : [21 21]
+Used neurons : 400 / 441 ( 90.702947845805 %)
+
+
+500 EPOCHS
+
+Epoch :  500 / 500
+Changed values SOM : 3295
+Mean error SOM:  6.379773881095466
+PSNR:  26.445073095988462
+Used neurons : 432 / 441 ( 97.95918367346938 %)
+
+Epoch :  500 / 500
+Changed values SOM : 1757
+Mean error SOM:  7.243959611561493
+PSNR:  27.00026589493536
+Used neurons : 144 / 144 ( 100.0 %)
+
+./results/deep/star_12n_3x3_500epoch_comp.png
+Pictures number : [21 21]
+Used neurons : 406 / 441 ( 92.06349206349206 %)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

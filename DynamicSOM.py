@@ -2,6 +2,16 @@ from Graph import *
 import copy
 
 
+def euclidian_norm(x, y):
+    assert np.array_equal(np.array(x.shape), np.array(y.shape))
+    return np.sqrt(np.sum((x - y) ** 2))
+
+
+def normalized_euclidian_norm(x, y):
+    assert np.array_equal(np.array(x.shape), np.array(y.shape))
+    return np.sqrt(np.sum((x - y) ** 2))/np.sqrt(x.shape[0])
+
+
 def dist_quad(x, y):
     assert np.array_equal(np.array(x.shape), np.array(y.shape))
     return np.sum((x - y) ** 2)
@@ -44,18 +54,15 @@ class DynamicNeuron:
         self.weight = (max-min) * np.random.random(shape) + min
         self.current_center = 'C'
         self.neighbour = neighbour
+        self.error = 0
+        self.nb_BMU = 0
 
 
 class DynamicSOM:
     def __init__(self, data, connexion_matrices, threshold=switch_threshold, eps_s=epsilon_start, eps_e=epsilon_end, sig_s=sigma_start, sig_e=sigma_end, ep_nb=epoch_nbr):
-        self.epsilon = eps_s
-        self.epsilon_stepping = (eps_e - eps_s) / ep_nb
         self.threshold = threshold
         self.changed_connexions = 0
 
-        self.sigma = sig_s
-        self.sigma_stepping = (sig_e - sig_s) / ep_nb
-        
         self.data = np.array(data)
         self.vector_list = None
         data_shape = self.data.shape[1]
@@ -177,23 +184,21 @@ class DynamicSOM:
         return datacomp
 
     def train(self, iteration, epoch_time, vector_coordinates, f=normalized_gaussian, distance=dist_quad):
-        if iteration % epoch_time == 0:
-            self.epsilon += self.epsilon_stepping
-            self.sigma += self.sigma_stepping
-            if dsom and iteration > 0:
-                self.check_allegiance()
-            self.refresh_distance_vector = True
-        if self.refresh_distance_vector:
-            for i in range(len(self.distance_vector)):
-                self.distance_vector[i] = f(i/(len(self.distance_vector)-1), self.sigma)
-            if log_gaussian_vector:
-                print(self.distance_vector) 
+        if iteration % epoch_time == 0 and dsom and iteration > 0:
+            self.check_allegiance()
 
         vector = self.data[vector_coordinates]
 
         # Getting the Best matching unit
         bmu = self.winner(vector, distance)
         self.nodes[bmu].t = 1
+        for i in range(len(self.distance_vector)):
+            if np.sum(vector-self.nodes[bmu].weight) == 0:
+                self.distance_vector[i] = 0
+            else:
+                self.distance_vector[i] = np.exp(-1/(elasticity**2)*(i/len(self.distance_vector))**2/(normalized_euclidian_norm(vector, self.nodes[bmu].weight))**2)
+        if log_gaussian_vector:
+            print(self.distance_vector)
         self.updating_weights(bmu, vector)
 
         return bmu[0], bmu[1]
@@ -203,7 +208,7 @@ class DynamicSOM:
             for y in range(neuron_nbr):
                 dist = self.neural_dist[bmu[1]*neuron_nbr+bmu[0], y*neuron_nbr+x]
                 if dist >= 0:  # exploiting here the numpy bug so that negative value equals no connections
-                    self.nodes[x, y].weight += self.epsilon*self.distance_vector[dist]*(vector-self.nodes[x, y].weight)
+                    self.nodes[x, y].weight += dsom_epsilon*normalized_euclidian_norm(vector, self.nodes[x,y].weight)*self.distance_vector[dist]*(vector-self.nodes[x, y].weight)
 
     def pruning_neighbors(self):
         for x in range(neuron_nbr-1):
