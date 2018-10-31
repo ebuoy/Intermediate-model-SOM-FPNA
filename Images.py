@@ -36,7 +36,7 @@ class Dataset:
         if size[0] / pictures_dim[0] != self.nb_pictures[0] or size[0] / pictures_dim[0] != self.nb_pictures[0]:
             print("\tWarning - image size is not divisible by pictures dimensions, the result will be cropped")
 
-    def compression(self, som, name):
+    def compute_result(self, som):
         som_map = som.get_som_as_map()
         pixels = []
         winners = []
@@ -57,13 +57,17 @@ class Dataset:
         px = np.concatenate(lst2, axis=0)
         px *= 255
         px = np.array(px, 'uint8')
-
         file = Image.fromarray(px)
+
+        # n = neuron_nbr*neuron_nbr
+        # print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")
+
+        return file
+
+    def compression(self, som, name):
+        file = self.compute_result(som)
         #file.show()
         file.save(output_path+name)
-
-        n = neuron_nbr*neuron_nbr
-        print("Used neurons :", len(winners), "/", n, "(", len(winners)/n*100, "%)")
 
     def save_compressed(self, som, name):
         # winners = np.zeros((neuron_nbr, neuron_nbr))

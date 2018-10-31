@@ -39,7 +39,7 @@ class GraphicalSOM:
         self.connexion = Canvas(self.window, width=connexions_size, height=connexions_size, bg="ivory")
         self.connexion.grid(row=6, column=10, columnspan=1, rowspan=1, padx=10, pady=10)
         np.random.seed(0)
-        self.SOM = OriginalPCSOM(sierpinski_carpet(dataset_size, 1), kohonen())
+        self.SOM = PCSOM(sierpinski_carpet(dataset_size, 1), star())
         self.epoch_time = len(self.SOM.data)
         self.current_iteration = 0
         self.total_iterations = self.epoch_time * epoch_nbr
@@ -54,7 +54,7 @@ class GraphicalSOM:
         self.draw_data()
         self.draw_map()
         self.draw_metrics()
-        #self.draw_connexions()
+        self.draw_connexions()
 
         self.item = None
         self.canvas.bind("<Button-1>", self.deselect)

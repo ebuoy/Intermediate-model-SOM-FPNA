@@ -56,5 +56,5 @@ elite_proportion = 0.4
 
 # Logs
 log_graphs = False
-log_gaussian_vector = True
+log_gaussian_vector = False
 log_execution = False
